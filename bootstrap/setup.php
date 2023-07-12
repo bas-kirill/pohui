@@ -35,7 +35,12 @@ INSERT INTO amazon.books (title, description, price, creation_timestamp, categor
     ('Book 7', 'Description of Book 7', '21.99', '2023-07-07 12:30:00', 1),
     ('Book 8', 'Description of Book 8', '9.99', '2023-07-08 15:10:00', 2),
     ('Book 9', 'Description of Book 9', '27.99', '2023-07-09 18:00:00', 3),
-    ('Book 10', 'Description of Book 10', '14.99', '2023-07-10 10:45:00', 1);
+    ('Book 10', 'Description of Book 10', '14.99', '2023-07-10 10:45:00', 1),
+    ('Book 11', 'Description of Book 11', '16.99', '2023-07-11 09:30:00', 1),
+    ('Book 12', 'Description of Book 12', '18.99', '2023-07-12 14:45:00', 1),
+    ('Book 13', 'Description of Book 13', '21.99', '2023-07-13 11:20:00', 1),
+    ('Book 14', 'Description of Book 14', '13.99', '2023-07-14 16:30:00', 1),
+    ('Book 15', 'Description of Book 15', '15.99', '2023-07-15 10:15:00', 1);
 ");
 
 ?>

@@ -3,8 +3,8 @@
 require_once "../db/db.php";
 
 $result = queryMySql("
-    select title, price, description, price, category from amazon.books 
-    inner join amazon.categories on books.category_id = categories.category_id
+    select title, price, description, price, category from amazon.books b
+    inner join amazon.categories c on b.category_id = c.category_id
     order by creation_timestamp desc 
     limit 6
 ");
