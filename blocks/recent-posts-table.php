@@ -1,13 +1,30 @@
 <?php
-$db_servername = "localhost";
-$db_username = "root"; // default MAMP MySQL username
-$db_password = "root"; // default MAMP MySQL password
-$conn = new mysqli($db_servername, $db_username, $db_password);
 
-if ($conn->connect_error) {
-    die("Connection to MySQL Failed" . $conn->connect_error);
+require_once "../db/db.php";
+
+$result = queryMySql("
+    select title, price, description, price, category from amazon.books 
+    inner join amazon.categories on books.category_id = categories.category_id
+    order by creation_timestamp desc 
+    limit 6
+");
+
+$books_divs = array();
+$cnt = 0;
+while ($row = $result->fetch_assoc()) {
+    $title = $row["title"];
+    $description = $row["description"];
+    $price = $row["price"];
+    $category = $row["category"];
+    $book_div = "<div class=\"col-md-4\">Title: $title; Description: $description; Price: $price; Category: $category</div>";
+    $books_divs[] = $book_div;
+    $cnt++;
 }
-echo "<script type=\"text/javascript\">console.log(\"Connected Successfully\");</script>";
+
+debug_to_console("found $cnt rows from MySQL");
+
+$books_part_one = implode(" ", array_slice($books_divs, 0, 3));
+$books_part_two = implode(" ", array_slice($books_divs, 3, 3));
 
 echo <<<_END
     <style>
@@ -26,23 +43,12 @@ echo <<<_END
         <span>Recent Posts:</span>
         <div id="recent-posts-table" class="container-fluid text-center">
             <div id="recent-posts-row-one" class="row">
+                $books_part_one
+            </div>
+            <div id="recent-posts-row-two" class="row">
+                $books_part_two
+            </div>
+        </div>
+    </div>
 _END;
-
-$select_recent_books_sql = "select title, price, description from books fetch first 6 rows";
-$result = $conn->query($select_recent_books_sql);
-if ($result->num_rows > 0) {
-    $cnt = 0;
-    while ($row = $result->fetch_assoc()) {
-        if ($cnt % 3 == 0) {
-            echo "</div>";
-            echo "<div id=\"recent-posts-row-two\" class=\"row\">";
-        }
-        $book_title = $row["title"];
-        $book_description = $row["description"];
-        echo "<div class=\"col-md-4\">Title: $book_title; Description: $book_description</div>";
-        $cnt += 1;
-    }
-}
-
-echo "</div></div></div>";
 ?>

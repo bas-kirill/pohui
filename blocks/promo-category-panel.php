@@ -1,4 +1,11 @@
 <?php
+
+require_once "../db/db.php";
+
+$result = queryMySql("
+    select title, description, price
+");
+
 echo <<<_END
     <style>
         #promo-category-panel {

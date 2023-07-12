@@ -35,6 +35,12 @@ echo <<<_END
         <div id="cart-panel">
             <button type="button" class="btn" onClick="redirectToCartPage()">Cart</button>
         </div>
+        <script>
+            function redirectToCartPage() {
+                cartURL = "http://localhost:8888/cart.php";
+                window.location.href = cartURL;
+            }
+        </script>
 _END;
 
 if (isset($_SESSION["user"])) {
