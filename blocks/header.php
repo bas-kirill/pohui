@@ -2,6 +2,13 @@
 
 echo <<<_END
     <style>
+        body > header {
+            width: 100%;
+            height: 10%;
+            background-color: aqua;
+            display: grid;
+            border: 1px solid black;
+        }
         #logo-panel {
             grid-column: 1;
             background-color: azure;
@@ -37,7 +44,7 @@ echo <<<_END
         </div>
         <script>
             function redirectToCartPage() {
-                cartURL = "http://localhost:8888/cart.php";
+                cartURL = "http://localhost:8888/web/cart.php";
                 window.location.href = cartURL;
             }
         </script>
@@ -65,7 +72,7 @@ if ($loggedIn) {
         
         <script type="text/javascript">
             function redirectToAccountPage() {
-                cartURL = "http://localhost:8888/account.php";
+                cartURL = "http://localhost:8888/web/account.php";
                 window.location.href = cartURL;
             }
             console.log("Logged in as $user");
@@ -86,7 +93,7 @@ _END;
         
         <script type="text/javascript">
             function redirectToLoginPage() {
-                indexURL = "http://localhost:8888/login.php";
+                indexURL = "http://localhost:8888/web/login.php";
                 window.location.href = indexURL;
             }
             console.log("Please sign and/or log in to join")
