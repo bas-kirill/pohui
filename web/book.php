@@ -21,7 +21,8 @@
         </style>
 _END;
 
-    require_once "../blocks/serp.php"
+    require_once "../blocks/book-profile.php";
+
     ?>
 </main>
 <footer>

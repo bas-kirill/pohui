@@ -3,7 +3,7 @@
 require_once "../db/db.php";
 
 $result = queryMySql("
-    select title, description, price, category from amazon.books b
+    select book_id, title, description, price, category from amazon.books b
     inner join amazon.categories c on b.category_id = c.category_id
     where category = 'Fiction'
     order by creation_timestamp desc
@@ -13,11 +13,15 @@ $result = queryMySql("
 $books_div = array();
 $cnt = 0;
 while ($row = $result->fetch_assoc()) {
+    $book_id = $row["book_id"];
     $title = $row["title"];
     $description = $row["description"];
     $price = $row["price"];
     $category = $row["category"];
-    $book_div = "<div class=\"col-md-4\">Title: $title; Description: $description; Price: $price; Category: $category</div>";
+    $book_div = "
+        <div class=\"col-md-4\">
+            <a href='/web/book.php?id=$book_id'>Id: $book_id; Title: $title; Description: $description; Price: $price; Category: $category</a>
+        </div>";
     $books_divs[] = $book_div;
     $cnt++;
 }

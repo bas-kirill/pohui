@@ -1,7 +1,3 @@
-<?php
-    require_once "../bootstrap/setup.php";
-?>
-
 <html>
 <head>
     <?php

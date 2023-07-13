@@ -15,7 +15,7 @@ INSERT INTO amazon.categories (category) VALUES
 ");
 
 createTable("amazon.books", "
-    id                 integer auto_increment primary key,
+    book_id                 integer auto_increment primary key,
     title              varchar(255) not null,
     description        text         not null,
     price              varchar(20)  not null,
