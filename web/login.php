@@ -16,7 +16,7 @@ echo <<<_END
         }
     </style>
 _END;
-
+require_once "../blocks/login-panel.php";
 echo "</main>";
 echo "<footer>";
 require_once "../blocks/footer.php";
