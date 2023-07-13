@@ -55,12 +55,6 @@ if ($result->num_rows > 1) {
         debug_to_console("321");
     }
 
-    if (isset($_POST["action"]) && $_POST["action"] == "cart") {
-        debug_to_console("lol");
-        addBookToCartCookie($bookId);
-        debug_to_console("kek");
-    }
-
     $book_div_html = "
     <div>
         <a href='/web/book.php?id=$bookId'>Id: $bookId; Title: $title; Description: $description; Price: $price; Category: $category</a>
