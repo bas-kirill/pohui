@@ -1,5 +1,4 @@
 <?php
-session_start();
 echo "<html>";
 echo "<head>";
 require_once "../blocks/head.php";
