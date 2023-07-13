@@ -11,6 +11,5 @@ echo <<<_END
     <div id="cart-panel">
 _END;
 require_once "books-to-buy.php";
-require_once "checkout-panel.php";
 echo "</div>"
 ?>
