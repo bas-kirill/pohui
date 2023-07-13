@@ -1,22 +1,22 @@
 <?php
-    require_once "../bootstrap/setup.php";
+require_once "../bootstrap/setup.php";
 ?>
 
 <html>
 <head>
     <?php
-        require_once "../blocks/head.php";
+    require_once "../blocks/head.php";
     ?>
 </head>
 <body>
 <header>
     <?php
-        require_once "../blocks/header.php";
+    require_once "../blocks/header.php";
     ?>
 </header>
 <main>
     <?php
-        echo <<<_END
+    echo <<<_END
         <style>
             body > main {
                 width: 100%;
@@ -25,8 +25,7 @@
         </style>
 _END;
 
-        require_once "../blocks/recent-posts-table.php";
-        require_once "../blocks/promo-category-panel.php";
+    require_once "../blocks/serp.php"
     ?>
 </main>
 <footer>

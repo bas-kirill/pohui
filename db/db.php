@@ -29,6 +29,7 @@ function queryMySql($query)
         debug_to_console("can not execute query " . $query);
         die($connection->error);
     }
+    debug_to_console($result);
     return $result;
 }
 

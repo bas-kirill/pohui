@@ -3,6 +3,8 @@
 echo <<<_END
     <style>
         body > header {
+            /*position: fixed;    !* fixed header *!*/
+            /*top: 0;*/
             width: 100%;
             height: 10%;
             background-color: aqua;
@@ -30,13 +32,12 @@ echo <<<_END
         }
     </style>
 
-        <div id="logo-panel" class="text-center">Logo</div>
+        <div id="logo-panel" class="text-center"><a href="/web/index.php">Logo</a></div>
         <div id="catalogue-panel"><button type="button" class="btn">Catalogue</button></div>
     
         <div id="search-panel" class="input-group">
-            <form action="/search.php" method="post">
-                <input type="text" placeholder="Look for amazing world of books..." aria-label="Search books...">
-                <button id="search-button" class="btn btn-outline-secondary" type="submit">Search</button>
+            <form action="/web/search.php" method="post">
+                <input type="search" placeholder="Search" name="search-query">
             </form>
         </div>
         <div id="cart-panel">

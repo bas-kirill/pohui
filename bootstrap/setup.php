@@ -7,6 +7,13 @@ createTable("amazon.categories", "
     category    varchar(255) not null
 ");
 
+queryMySql("
+INSERT INTO amazon.categories (category) VALUES
+    ('Fiction'),
+    ('Non-Fiction'),
+    ('Mystery')
+");
+
 createTable("amazon.books", "
     id                 integer auto_increment primary key,
     title              varchar(255) not null,
@@ -14,14 +21,8 @@ createTable("amazon.books", "
     price              varchar(20)  not null,
     creation_timestamp timestamp    not null,
     category_id        int          not null,
-    CONSTRAINT FK_CATEGORY_ID FOREIGN KEY (category_id) references amazon.categories(category_id)
-");
-
-queryMySql("
-INSERT INTO amazon.categories (category) VALUES
-    ('Fiction'),
-    ('Non-Fiction'),
-    ('Mystery')
+    CONSTRAINT FK_CATEGORY_ID FOREIGN KEY (category_id) references amazon.categories(category_id),
+    FULLTEXT (description)
 ");
 
 queryMySql("

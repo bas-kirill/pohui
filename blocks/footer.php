@@ -5,6 +5,7 @@ echo <<<_END
         width: 100%;
         height: 10%;
         background-color: gold;
+        margin-top: auto;
     }
 </style>
 Ku ku Epta!
