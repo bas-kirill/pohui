@@ -32,17 +32,49 @@ if ($result->num_rows > 1) {
     $price = $row["price"];
     $category = $row["category"];
 
+    function addBookToCartCookie($bookId) {
+        $cartCookieName = "cart";
+        $existingCart = isset($_COOKIE[$cartCookieName]) ? $_COOKIE[$cartCookieName] : "";
+        if ($existingCart == "") {
+            $newCart = $bookId;
+        } else {
+            $newCart = $existingCart . "~" . $bookId;
+        }
+
+        $expirationTime = time() + 3600;
+        $path = "/";
+        $domain = "";
+        $secure = false;
+        $httpOnly = true;
+        setcookie($cartCookieName, $newCart, $expirationTime, $path, $domain, $secure, $httpOnly);
+    }
+
+    if (array_key_exists("cart", $_POST)) {
+        debug_to_console("123");
+        addBookToCartCookie($bookId);
+        debug_to_console("321");
+    }
+
+    if (isset($_POST["action"]) && $_POST["action"] == "cart") {
+        debug_to_console("lol");
+        addBookToCartCookie($bookId);
+        debug_to_console("kek");
+    }
+
     $book_div_html = "
     <div>
         <a href='/web/book.php?id=$bookId'>Id: $bookId; Title: $title; Description: $description; Price: $price; Category: $category</a>
-        <button type='button' onclick='addToCart()'>Add To Cart</button>
+        <form method='post'>
+            <button type='submit' class='button' name='cart' value='cart'>Add To Cart</button>
+        </form>
     </div>
+    
+    
     <script type='text/javascript'>
         function addToCart() {
             console.log('added to cart');
         }
-    </script>
-    ";
+    </script>";
 }
 
 echo <<<_END
