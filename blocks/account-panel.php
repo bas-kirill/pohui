@@ -103,7 +103,11 @@ if (isset($_POST["edit-user-name"])) {
     return;
 }
 
-if (isset($_POST["delete-another-user"])) {
+if (isset($_POST["delete-user-username"])) {
+    $username = $_POST["delete-user-username"];
+    $deleteUserSQL = "delete from amazon.users where username = '$username'";
+    $result = queryMySql($deleteUserSQL);
+    echo "<div>Deleted user with username = '$username'</div>";
     return;
 }
 
@@ -182,6 +186,13 @@ if ($_GET["edit"]) {
             Password: <input type='text' name='edit-user-password'>
             Role: <input type='text' name='edit-user-role-type'>    <!-- Set up enum values -->
             Address: <input type='text' name='edit-user-address'>
+            <input type='submit' value='Submit'>
+        </form>
+    ";
+} else if (isset($_GET["delete-user"])) {
+    $dynamicPanel = "
+        <form method='post'>
+            Username: <input type='text' name='delete-user-username'>
             <input type='submit' value='Submit'>
         </form>
     ";
