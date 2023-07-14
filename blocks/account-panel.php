@@ -111,7 +111,16 @@ if (isset($_POST["delete-user-username"])) {
     return;
 }
 
-if (isset($_POST["add-book"])) {
+if (isset($_POST["add-book-title"])) {
+    $title = $_POST["add-book-title"];
+    $description = $_POST["add-book-description"];
+    $price = $_POST["add-book-price"];
+    $categoryId = $_POST["add-book-category-id"];
+    $addNewBookSQL = "
+        insert into amazon.books (title, description, price, creation_timestamp, category_id)
+        values ('$title', '$description', $price, 'current_timestamp', $categoryId)";
+    $result = queryMySql($addNewBookSQL);
+    echo "<div>Created new book with title = '$title'</div>";
     return;
 }
 
@@ -196,6 +205,27 @@ if ($_GET["edit"]) {
             <input type='submit' value='Submit'>
         </form>
     ";
+} else if (isset($_GET["add-book"])) {
+    $dynamicPanel = "
+        <form method='post'>
+            Title: <input type='text' name='add-book-title'>
+            Description: <input type='text' name='add-book-description'>
+            Price: <input type='number' name='add-book-price'>
+            Category: <input type='number' name='add-book-category-id'>
+            <input type='submit' value='Submit'>
+        </form>
+    ";
+} else if (isset($_GET["edit-book"])) {
+    // todo: сделать редактирование книжки
+//    $dynamicPanel = "
+//        <form method='post'>
+//            Title: <input type='text' name='add-book-title'>
+//            Description: <input type='text' name='add-book-description'>
+//            Price: <input type='number' name='add-book-price'>
+//            Category: <input type='number' name='add-book-category-id'>
+//            <input type='submit' value='Submit'>
+//        </form>
+//    ";
 } else {
     $dynamicPanel = "
         <div>Orders:</div>
