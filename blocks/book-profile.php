@@ -4,7 +4,7 @@ require_once "../db/db.php";
 
 $bookId = $_GET["id"];
 
-debug_to_console($bookId);
+debutToConsole($bookId);
 
 $sql = "
     select book_id, title, description, price, category from amazon.books b
@@ -14,7 +14,7 @@ $sql = "
 $result = queryMySql($sql);
 
 if (!$result) {
-    debug_to_console("can not execute $sql");
+    debutToConsole("can not execute $sql");
     return;
 }
 
@@ -50,9 +50,9 @@ if ($result->num_rows > 1) {
     }
 
     if (array_key_exists("cart", $_POST)) {
-        debug_to_console("123");
+        debutToConsole("123");
         addBookToCartCookie($bookId);
-        debug_to_console("321");
+        debutToConsole("321");
     }
 
     $book_div_html = "

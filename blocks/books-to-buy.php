@@ -5,7 +5,7 @@ require_once "../db/db.php";
 
 function parseBookIdsFromCookie() {
     if (!array_key_exists("cart", $_COOKIE)) {
-        debug_to_console("cookie with cart not found");
+        debutToConsole("cookie with cart not found");
         return array();
     }
 
@@ -31,7 +31,7 @@ if (count($booksIds) == 0) {
         $result = queryMySql($get_book_by_id_sql);
 
         if (!$result) {
-            debug_to_console("can not get book id from database: $bookId");
+            debutToConsole("can not get book id from database: $bookId");
             continue;
         }
 

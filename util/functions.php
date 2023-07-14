@@ -7,7 +7,7 @@ function sanitizeString($var) {
     return $var;
 }
 
-function debug_to_console($data) {
+function debutToConsole($data) {
     $consoleOutput = 'DEBUG: ';
     if (is_array($data) || is_object($data)) {
         $consoleOutput .= json_encode($data);
@@ -15,6 +15,16 @@ function debug_to_console($data) {
         $consoleOutput .= $data;
     }
     echo "<script>console.log('" . $consoleOutput . "');</script>";
+}
+
+function destroySession() {
+    $_SESSION=array();
+
+    if (session_id() != "" || isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), "", time()-2592000, "/");
+    }
+
+    session_destroy();
 }
 
 ?>

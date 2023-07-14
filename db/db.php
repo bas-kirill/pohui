@@ -10,11 +10,11 @@ $db_password = "root";
 $connection = new mysqli($db_host, $db_user, $db_password, $db_name);
 
 if ($connection->connect_error) {
-    debug_to_console("can not connect to db");
+    debutToConsole("can not connect to db");
     die($connection->connect_error);
 }
 
-debug_to_console("connected to db successfully");
+debutToConsole("connected to db successfully");
 
 function createTable($name, $query)
 {
@@ -26,10 +26,10 @@ function queryMySql($query)
     global $connection;
     $result = $connection->query($query);
     if (!$result) {
-        debug_to_console("can not execute query " . $query);
+        debutToConsole("can not execute query " . $query);
         die($connection->error);
     }
-    debug_to_console($result);
+    debutToConsole($result);
     return $result;
 }
 

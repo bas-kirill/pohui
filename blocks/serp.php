@@ -4,7 +4,7 @@ require_once "../util/functions.php";
 require_once "../db/db.php";
 
 $searchQuery = $_POST["search-query"];
-debug_to_console("search query $searchQuery");
+debutToConsole("search query $searchQuery");
 
 $sql = "
     select book_id, title, description, price, category from amazon.books b
@@ -16,7 +16,7 @@ $sql = "
 $result = queryMySql($sql);
 
 if (!$result) {
-    debug_to_console("can not execute query for searching books");
+    debutToConsole("can not execute query for searching books");
     return;
 }
 
@@ -34,7 +34,7 @@ while ($row = $result->fetch_assoc()) {
     $description = $row["description"];
     $price = $row["price"];
     $category = $row["category"];
-    debug_to_console("$title, $description, $price, $category");
+    debutToConsole("$title, $description, $price, $category");
     $serp_div = "
         <div>
             <a href='/web/book.php?id=$book_id'>Id: $book_id; Title: $title; Description: $description; Price: $price; Category: $category</a>
