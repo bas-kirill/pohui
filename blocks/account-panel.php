@@ -4,16 +4,6 @@ require_once "../log/log.php";
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
-if ($_GET["edit"]) {
-    // todo: добавить механизм редактирования данных об аккаунте
-    return;
-}
-
-if ($_GET["delete"]) {
-    // todo: сделать механизм удаления аккаунта
-    return;
-}
-
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
     $username = $_SESSION["username"];
@@ -22,8 +12,82 @@ if (isset($_SESSION["username"])) {
 }
 
 if (!$loggedIn) {
+    debutToConsole("not logged in");
     die();
 }
+
+if (isset($_POST["edit-address"]) && isset($_POST["edit-name"])) {
+    $address = $_POST["edit-address"];
+    $name = $_POST["edit-name"];
+
+    debutToConsole($address);
+    debutToConsole($name);
+    debutToConsole($username);
+
+    if ($address == "" && $name == "") {
+        echo "<div>Submitted empty fields</div>";
+        return;
+    }
+
+    if ($address != "" && $name != "") {
+        $updateUserProfileSQL = "
+            update amazon.users set name = '$name', delivery_address='$address' 
+            where username = '$username'";
+
+        $result = queryMySql($updateUserProfileSQL);
+        echo "<div>User profile with username='$username' updated with new address '$address' and name '$name'</div>";
+        return;
+    }
+
+    if ($address != "") {
+        $updateUserProfileSQL = "update amazon.users set delivery_address = '$address' where username = '$username'";
+        $result = queryMySql($updateUserProfileSQL);
+        echo "<div>User profile with username='$username' updated with new address '$address'</div>";
+        return;
+    }
+
+    if ($name != "") {
+        $updateUserProfileSQL = "update amazon.users set name = '$name' where username = '$username'";
+        $result = queryMySql($updateUserProfileSQL);
+        echo "<div>User profile with username='$username' u;dated with new name '$name'</div>";
+        return;
+    }
+
+    return;
+}
+
+if (isset($_POST["delete-approved"])) {
+    $deleteUserProfileSQL = "delete from amazon.users where username = '$username'";
+    $result = queryMySql($deleteUserProfileSQL);
+    echo "<div>User with username='$username' deleted</div>";
+    destroySession();
+    return;
+}
+
+if (isset($_POST["add-user"])) {
+    return;
+}
+
+if (isset($_POST["edit-another-user"])) {
+    return;
+}
+
+if (isset($_POST["delete-another-user"])) {
+    return;
+}
+
+if (isset($_POST["add-book"])) {
+    return;
+}
+
+if (isset($_POST["edit-book"])) {
+    return;
+}
+
+if (isset($_POST["delete-book"])) {
+    return;
+}
+
 
 $selectUserSQL = "select name, username, role_type from amazon.users where username='$username'";
 
@@ -43,16 +107,39 @@ $adminSectionPanelDiv = "";
 if ($roleType == "admin") {
     $adminSectionPanelDiv = "
         <div id='admin-actions-panel'>
-            <div>Add User</div>
-            <div>Edit User</div>
-            <div>Delete User</div>
-            <div>Add Book</div>
-            <div>Edit Book</div>
-            <div>Delete Book</div>
+            <form method='get'><input type='submit' name='add-user' value='Add User'></form>
+            <form method='get'><input type='submit' name='edit-user' value='Edit User'></form>
+            <form method='get'><input type='submit' name='delete-user' value='Delete User'></form>
+            <form method='get'><input type='submit' name='add-book' value='Add Book'></form>
+            <form method='get'><input type='submit' name='edit-book' value='Edit Book'></form>
+            <form method='get'><input type='submit' name='delete-book' value='Delete Book'></form>
         </div>";
 }
 
-$order_divs_html = "";
+if ($_GET["edit"]) {
+    $dynamicPanel = "
+        <div>Edit '$username' Profile</div>
+        <form method='post'>
+            <span class='fieldname'>Address:</span><input type='text' name='edit-address'>
+            <span class='fieldname'>Name:</span><input type='text' name='edit-name'>
+            <input type='submit' value='Submit'>
+        </form>
+    ";
+} else if ($_GET["delete"]) {
+    $dynamicPanel = "
+        <span>Are you sure that you want to delete account?</span>
+        <form method='post'>
+            <input type='submit' name='delete-approved' value='Yes'>
+        </form>
+    ";
+} else {
+    $dynamicPanel = "
+        <div>Orders:</div>
+        <div>
+            Todo: Get Orders
+        </div>
+    ";
+}
 
 echo <<<_END
 <style>
@@ -93,8 +180,7 @@ echo <<<_END
     </div>
     <div id="orders-panel">
         <div>Name: $name; Username: $username; Role Type: $roleType</div>
-        <div>Orders:</div>
-        $order_divs_html
+        $dynamicPanel
     </div>
 </div>
 
