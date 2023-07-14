@@ -129,6 +129,10 @@ if (isset($_POST["edit-book"])) {
 }
 
 if (isset($_POST["delete-book"])) {
+    $title = $_POST["delete-book-title"];
+    $deleteBookSQL = "delete from amazon.books where title = '$title'";
+    $result = queryMySql($deleteBookSQL);
+    echo "<div>Deleted book with title '$title'</div>";
     return;
 }
 
@@ -187,7 +191,7 @@ if ($_GET["edit"]) {
             <input type='submit' value='Submit'>
         </form>
     ";
-}  else if ($_GET["edit-user"]) {
+} else if ($_GET["edit-user"]) {
     $dynamicPanel = "
         <form method='post'>
             Name: <input type='text' name='edit-user-name'>
@@ -226,6 +230,12 @@ if ($_GET["edit"]) {
 //            <input type='submit' value='Submit'>
 //        </form>
 //    ";
+} else if (isset($_GET["delete-book"])) {
+    $dynamicPanel = "
+        <form method='post'>
+            Title: <input type='text' name='delete-book-title'>
+        </form>
+    ";
 } else {
     $dynamicPanel = "
         <div>Orders:</div>
