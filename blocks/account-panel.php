@@ -84,7 +84,22 @@ if (isset($_POST["add-user-name"])) {
     return;
 }
 
-if (isset($_POST["edit-another-user"])) {
+if (isset($_POST["edit-user-name"])) {
+    $name = $_POST["add-user-name"];
+    $username = $_POST["add-user-username"];
+    $password = $_POST["add-user-password"];
+    $address = $_POST["add-user-password"];
+    $roleType = $_POST["add-user-role-type"];
+
+    // todo: сделать проверки
+    $addNewUserSQL = "
+        update amazon.users set name = '$name', password = '$password',
+                                delivery_address = '$address', role_type = '$roleType'
+        where username = '$username';
+    ";
+
+    $result = queryMySql($addNewUserSQL);
+    echo "<div>Created new user with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
     return;
 }
 
@@ -159,7 +174,18 @@ if ($_GET["edit"]) {
             <input type='submit' value='Submit'>
         </form>
     ";
-}  else {
+}  else if ($_GET["edit-user"]) {
+    $dynamicPanel = "
+        <form method='post'>
+            Name: <input type='text' name='edit-user-name'>
+            Username: <input type='text' name='edit-user-username'>
+            Password: <input type='text' name='edit-user-password'>
+            Role: <input type='text' name='edit-user-role-type'>    <!-- Set up enum values -->
+            Address: <input type='text' name='edit-user-address'>
+            <input type='submit' value='Submit'>
+        </form>
+    ";
+} else {
     $dynamicPanel = "
         <div>Orders:</div>
         <div>
