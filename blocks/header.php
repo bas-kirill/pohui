@@ -51,9 +51,9 @@ echo <<<_END
         </script>
 _END;
 
-if (isset($_SESSION["user"])) {
+if (isset($_SESSION["username"])) {
     $loggedIn = true;
-    $user = $_SESSION["user"];
+    $user = $_SESSION["username"];
 } else {
     $loggedIn = false;
 }
