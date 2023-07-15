@@ -273,7 +273,7 @@ if ($_GET["edit"]) {
     $totalPrice = 0;
     $result = queryMySql($booksWithUsernameAndBookIdSQL);
     if ($result->num_rows == 0) {
-        $dynamicPanel = "<div>Someone else parcel was received</div>";
+        $dynamicPanel = "<div>Your order is empty</div>";
     } else {
         $bookDivs = array();
         while ($row = $result->fetch_assoc()) {
