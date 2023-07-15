@@ -237,11 +237,40 @@ if ($_GET["edit"]) {
         </form>
     ";
 } else {
+    $selectOrdersSQL = "
+        select b.title, b.description, b.price, c.category from amazon.orders o
+        inner join amazon.books b on o.book_id = b.book_id
+        inner join amazon.users u on o.user_id = u.user_id
+        inner join amazon.categories c on b.category_id = c.category_id
+        where u.username = '$username'
+    ";
+    $result = queryMySql($selectOrdersSQL);
+    if ($result->num_rows == 0) {
+        $orderDivsHtml = "<div>Orders was not found</div>";
+    } else {
+        $orderDivs = array();
+        while ($row = $result->fetch_assoc()) {
+            $title = $row["title"];
+            $description = $row["description"];
+            $price = $row["price"];
+            $category = $row["category"];
+
+            $orderDivHtml = "
+                <div>
+                    Title: $title; Price: $price; Category: $category; Description: $description
+                    <br>
+                    <button>Edit Order</button>
+                </div>";
+
+            $orderDivs[] = $orderDivHtml;
+        }
+
+        $orderDivsHtml = implode(" ", $orderDivs);
+    }
+
     $dynamicPanel = "
         <div>Orders:</div>
-        <div>
-            Todo: Get Orders
-        </div>
+        $orderDivsHtml
     ";
 }
 
