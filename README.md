@@ -10,23 +10,26 @@ a digital music/podcast/video service or a game development platform). Your webs
 1) Access Management (Login/Register) and connection to a DataBase
 2) In-page and cross-page search functionality (Search Engine)
 3) A Homepage including coverpage and 2 x 3 blocks corresponding to:
-   a) Recent posts
-   b) Posts from specific categories
+   - Recent posts
+   - Posts from specific categories
 4) A page from where users can view content by category (Category page)
 5) A page from where users can drill down to some specific product or service (e.g., Product detail page).
 6) Product/service selection mechanisms and checkout process (e.g., Shopping cart).
 7) Hosting at least two distinct user types (user/admin) with the following role-based privileges:
    1) User Panel:
-      a) Account settings (Edit/Delete profile)
-      b) Address Management
-      c) Orders
+      - Account settings (Edit/Delete profile)
+      - Address Management
+      - Orders
    2) Admin panel:
-      a) User Management (Add/Edit/Delete User)
-      b. Content Management (Add/Edit/Delete Content)
-      c) Order Management
+      - User Management (Add/Edit/Delete User)
+      - Content Management (Add/Edit/Delete Content)
+      - Order Management
    • Settings
 * All pages must exhibit a professional-looking (uniform) layout and display the same topmenu, header and footer.
   *Individual functionalities should be applied in accordance with the topic chosen by each group
+
+## Deploy
+TODO
 
 ## Techdebt:
 1. Добавить транзакции
