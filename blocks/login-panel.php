@@ -12,16 +12,26 @@ if (isset($_POST["login-username"])) {
         return;
     }
 
-    $usersSQL = "select username, password from amazon.users where username = '$username' and password = '$password'";
-    $result = queryMySql($usersSQL);
+    $usersSQL = "
+        select user_id, username, password, role_type from amazon.users 
+        where username = '$username' and password = '$password'";
 
+    $result = queryMySql($usersSQL);
     if ($result->num_rows == 0) {
         echo "<div>Username / Password invalid</div>";
         return;
     }
 
+    $row = $result->fetch_assoc();
+    $userId = $row["user_id"];
+    $username = $row["username"];
+    $password = $row["password"];
+    $roleType = $row["role_type"];
+
+    $_SESSION["user_id"] = $userId;
     $_SESSION["username"] = $username;
     $_SESSION["password"] = $password;
+    $_SESSION["role_type"] = $roleType;
     echo "<span>You are logged in</span>";
     return;
 }
