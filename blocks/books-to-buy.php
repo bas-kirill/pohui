@@ -3,6 +3,38 @@
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
+if (isset($_POST["cart-book-ids"])) {
+
+    if (isset($_SESSION["username"])) {
+        $loggedIn = true;
+        $username = $_SESSION["username"];
+    } else {
+        $loggedIn = false;
+    }
+
+    if (!$loggedIn) {
+        echo "<div>You need to log in to create the order</div>";
+        return;
+    }
+
+    $selectUserIdSQL = "select user_id from amazon.users where username = '$username'";
+    $result = queryMySql($selectUserIdSQL);
+    $row = $result->fetch_assoc();
+    $userId = $row["user_id"];
+
+    $cartBookIds = $_POST["cart-book-ids"];
+    $bookIds = explode("~", $cartBookIds);
+    debutToConsole($bookIds);
+    foreach ($bookIds as $bookId) {
+        // TODO: rewrite on one insert statemenet
+        $createNewOrderSQL = "insert into amazon.orders (book_id, user_id) value ($bookId, $userId)";
+        $result = queryMySql($createNewOrderSQL);
+        debutToConsole($bookId);
+    }
+    echo "<div>Successfully check out cart!</div>";
+    return;
+}
+
 function parseBookIdsFromCookie() {
     if (!array_key_exists("cart", $_COOKIE)) {
         debutToConsole("cookie with cart not found");
@@ -52,6 +84,8 @@ if (count($booksIds) == 0) {
 
 $goods = count($book_divs);
 
+$cartBookIds = implode("~", $booksIds);
+
 echo <<<_END
     <style>
         #books-to-buy {
@@ -67,7 +101,11 @@ echo <<<_END
     <div id="books-to-buy">$books_div_html</div>
     <div id="checkout-panel">
         <div>Items: $goods</div>
-        <div>Total price: $totalPrice</div> 
+        <div>Total price: $totalPrice</div>   
+        <form method="post">
+            <input type="hidden" name="cart-book-ids" value="$cartBookIds">
+            <input type="submit">
+        </form>
     </div>
 _END;
 
