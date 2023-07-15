@@ -32,6 +32,7 @@ if (isset($_POST["cart-book-ids"])) {
         debutToConsole($bookId);
     }
     echo "<div>Successfully check out cart!</div>";
+    setcookie("cart", "",  time()-2592000, "/");
     return;
 }
 
