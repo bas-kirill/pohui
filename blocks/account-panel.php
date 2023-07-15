@@ -136,6 +136,28 @@ if (isset($_POST["delete-book"])) {
     return;
 }
 
+if (isset($_POST["edit-order-delete-position"])) {
+    $bookISBN = $_POST["edit-order-delete-position"];
+
+    $selectOrderForUserWithPositionSQL = "
+        select o.book_id from amazon.orders o
+        inner join amazon.users u on o.user_id = u.user_id
+        inner join amazon.books b on o.book_id = b.book_id
+        where u.username = '$username' and b.isbn_10 = '$bookISBN'";
+
+    $result = queryMySql($selectOrderForUserWithPositionSQL);
+    $booksIds = array();
+    while ($row = $result->fetch_assoc()) {
+        $bookId = $row["book_id"];
+        $booksIds[] = $bookId;
+    }
+
+    $bookIds = implode(", ", $booksIds);
+
+    $deleteSelectedBookIdsSQL = "delete from amazon.orders where book_id in ($bookIds)";
+    $result = queryMySql($deleteSelectedBookIdsSQL);
+}
+
 
 $selectUserSQL = "select name, username, role_type from amazon.users where username='$username'";
 
@@ -236,20 +258,74 @@ if ($_GET["edit"]) {
             Title: <input type='text' name='delete-book-title'>
         </form>
     ";
+} else if (isset($_GET["edit-order"])) {
+    // check for security that item in user order
+    $bookId = $_GET["edit-order-book-id"];
+    $booksWithUsernameAndBookIdSQL = "
+        select b.isbn_10, b.title, b.price, b.description, c.category from amazon.orders o
+        inner join amazon.users u on o.user_id = u.user_id
+        inner join amazon.books b on o.book_id = b.book_id
+        inner join amazon.categories c on b.category_id = c.category_id
+        where u.username = '$username'
+    ";
+
+    $totalGoods = 0;
+    $totalPrice = 0;
+    $result = queryMySql($booksWithUsernameAndBookIdSQL);
+    if ($result->num_rows == 0) {
+        $dynamicPanel = "<div>Someone else parcel was received</div>";
+    } else {
+        $bookDivs = array();
+        while ($row = $result->fetch_assoc()) {
+            $isbn = $row["isbn_10"];
+            $title = $row["title"];
+            $price = $row["price"];
+            $description = $row["description"];
+            $category = $row["category"];
+            $bookDiv = "
+                <div>
+                    Title: $title; Price: $price; Category: $category; Description: $description
+                    <form method='post'>
+                        <input type='hidden' name='edit-order-delete-position' value='$isbn'>
+                        <input type='submit' value='Delete'>
+                    </form>
+                </div>";
+            $bookDivs[] = $bookDiv;
+            $totalGoods++;
+            $totalPrice += $price;
+        }
+        $orderDivsHtml = implode(" ", $bookDivs);
+
+        $cartSummary = "
+        <div>
+            <div>Total Goods: $totalGoods</div>
+            <div>Total Price: $totalPrice</div>
+        </div>";
+
+        $dynamicPanel = "
+            <div>Orders:</div>
+            $orderDivsHtml
+            $cartSummary
+        ";
+    }
 } else {
     $selectOrdersSQL = "
-        select b.title, b.description, b.price, c.category from amazon.orders o
+        select b.book_id, b.title, b.description, b.price, c.category from amazon.orders o
         inner join amazon.books b on o.book_id = b.book_id
         inner join amazon.users u on o.user_id = u.user_id
         inner join amazon.categories c on b.category_id = c.category_id
         where u.username = '$username'
     ";
+    $cartSummary = "";
+    $totalPrice = 0;
+    $totalGoods = 0;
     $result = queryMySql($selectOrdersSQL);
     if ($result->num_rows == 0) {
         $orderDivsHtml = "<div>Orders was not found</div>";
     } else {
         $orderDivs = array();
         while ($row = $result->fetch_assoc()) {
+            $bookId = $row["book_id"];
             $title = $row["title"];
             $description = $row["description"];
             $price = $row["price"];
@@ -258,19 +334,31 @@ if ($_GET["edit"]) {
             $orderDivHtml = "
                 <div>
                     Title: $title; Price: $price; Category: $category; Description: $description
-                    <br>
-                    <button>Edit Order</button>
                 </div>";
 
             $orderDivs[] = $orderDivHtml;
+            $totalPrice += $price;
+            $totalGoods++;
         }
 
         $orderDivsHtml = implode(" ", $orderDivs);
     }
 
+    $cartSummary = "
+        <div>
+            <div>Total Goods: $totalGoods</div>
+            <div>Total Price: $totalPrice</div>
+        </div>";
+
     $dynamicPanel = "
         <div>Orders:</div>
         $orderDivsHtml
+        <div>
+            <form method='get'>
+                <input type='submit' name='edit-order' value='Edit Order'>
+            </form>
+        </div>
+        $cartSummary
     ";
 }
 
