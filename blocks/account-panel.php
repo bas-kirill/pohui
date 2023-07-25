@@ -381,6 +381,7 @@ if ($_GET["edit"]) {
                         <div>Order Total Goods: $orderTotalGoods</div>
                         <div>Order Total Price: $orderTotalPrice</div>
                     </div>
+                    <hr>
                 </div>
             ";
             $orderDivs[] = $orderDiv;
@@ -390,7 +391,7 @@ if ($_GET["edit"]) {
         $orderDivsHtml = implode(" ", $orderDivs);
 
         $dynamicPanel = "
-            <div>Orders:</div>
+            <div><h3>Orders:</h3></div>
             <div>
                 $orderDivsHtml
             </div>
@@ -441,6 +442,7 @@ echo <<<_END
     </div>
     <div id="orders-panel">
         <div>Name: $name; Username: $username; Role Type: $roleType</div>
+        <hr>
         $dynamicPanel
     </div>
 </div>
