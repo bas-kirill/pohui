@@ -3,6 +3,7 @@
 require_once "../log/log.php";
 require_once "../util/functions.php";
 require_once "../db/db.php";
+require_once "../blocks/pojo.php";
 
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
@@ -309,57 +310,96 @@ if ($_GET["edit"]) {
         ";
     }
 } else {
-    $selectOrdersSQL = "
-        select b.book_id, b.title, b.description, b.price, c.category from amazon.orders o
+    $ordersForUserSQL = "
+        select b.book_id, b.isbn_10, b.title, b.description, b.price, c.category, o.creation_ts from amazon.orders o
         inner join amazon.books b on o.book_id = b.book_id
         inner join amazon.users u on o.user_id = u.user_id
         inner join amazon.categories c on b.category_id = c.category_id
         where u.username = '$username'
+        order by o.creation_ts desc
     ";
-    $cartSummary = "";
-    $totalPrice = 0;
+
     $totalGoods = 0;
-    $result = queryMySql($selectOrdersSQL);
+    $totalPrice = 0;
+    $result = queryMySql($ordersForUserSQL);
     if ($result->num_rows == 0) {
-        $orderDivsHtml = "<div>Orders was not found</div>";
+        $dynamicPanel = "<div>Your order is empty</div>";
     } else {
         $orderDivs = array();
+        $creationTsToBooks = array();
         while ($row = $result->fetch_assoc()) {
-            $bookId = $row["book_id"];
+            $isbn = $row["isbn_10"];
             $title = $row["title"];
-            $description = $row["description"];
             $price = $row["price"];
+            $description = $row["description"];
             $category = $row["category"];
+            $creationTs = $row["creation_ts"];
 
-            $orderDivHtml = "
+            $book = new Book($isbn, $title, $price, $description, $category);
+            if (isset($creationTsToBooks[$creationTs]) && !in_array($creationTs, $creationTsToBooks)) {
+                $creationTsToBooks[$creationTs][] = $book;
+            } elseif (!isset($creationTsToBooks[$creationTs])) {
+                $creationTsToBooks[$creationTs] = array($book);
+            }
+        }
+
+        $totalGoods = 0;
+        $totalPrice = 0;
+        $orderIdx = 1;
+        $orderDivs = array();
+        foreach ($creationTsToBooks as $creationTs => $books) {
+            $bookDivs = array();
+            $orderTotalGoods = 0;
+            $orderTotalPrice = 0;
+            foreach ($books as $book) {
+                $bookDiv = "
+                    <div>
+                        ISBN: $book->isbn; Title: $book->title; Price: $book->price; Category: $book->category; Description: $book->description
+                    </div>
+                ";
+                $bookDivs[] = $bookDiv;
+                $orderTotalGoods++;
+                $orderTotalPrice += $book->price;
+            }
+            $totalGoods += $orderTotalGoods;
+            $totalPrice += $orderTotalPrice;
+
+            $bookDivsHtml = implode(" ", $bookDivs);
+
+            $orderDiv = "
                 <div>
-                    Title: $title; Price: $price; Category: $category; Description: $description
-                </div>";
-
-            $orderDivs[] = $orderDivHtml;
-            $totalPrice += $price;
-            $totalGoods++;
+                    <div>Order #$orderIdx (Creation time: $creationTs):</div>
+                    <div>
+                        $bookDivsHtml
+                    </div>
+                    <div>
+                        <form method='get'>
+                            <input type='submit' name='edit-order' value='Edit Order'
+                        </form>
+                    </div>
+                    <div>
+                        <div>Order Total Goods: $orderTotalGoods</div>
+                        <div>Order Total Price: $orderTotalPrice</div>
+                    </div>
+                </div>
+            ";
+            $orderDivs[] = $orderDiv;
+            $orderIdx++;
         }
 
         $orderDivsHtml = implode(" ", $orderDivs);
+
+        $dynamicPanel = "
+            <div>Orders:</div>
+            <div>
+                $orderDivsHtml
+            </div>
+            <div>
+                <div>Total Goods: $totalGoods</div>
+                <div>Total Price: $totalPrice</div>
+            </div>
+        ";
     }
-
-    $cartSummary = "
-        <div>
-            <div>Total Goods: $totalGoods</div>
-            <div>Total Price: $totalPrice</div>
-        </div>";
-
-    $dynamicPanel = "
-        <div>Orders:</div>
-        $orderDivsHtml
-        <div>
-            <form method='get'>
-                <input type='submit' name='edit-order' value='Edit Order'>
-            </form>
-        </div>
-        $cartSummary
-    ";
 }
 
 echo <<<_END
