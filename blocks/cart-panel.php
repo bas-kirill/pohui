@@ -7,6 +7,7 @@ if (isset($_POST["checkout-book-ids"])) {
     if (isset($_SESSION["username"])) {
         $loggedIn = true;
         $username = $_SESSION["username"];
+        $userId = $_SESSION["user_id"];
     } else {
         $loggedIn = false;
     }
@@ -15,11 +16,6 @@ if (isset($_POST["checkout-book-ids"])) {
         echo "<div>You need to log in to create the order</div>";
         return;
     }
-
-    $selectUserIdSQL = "select user_id from amazon.users where username = '$username'";
-    $result = queryMySql($selectUserIdSQL);
-    $row = $result->fetch_assoc();
-    $userId = $row["user_id"];
 
     $cartBookIds = $_POST["checkout-book-ids"];
     $bookIds = explode("~", $cartBookIds);
