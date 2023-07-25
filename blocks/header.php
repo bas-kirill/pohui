@@ -3,8 +3,6 @@
 echo <<<_END
     <style>
         body > header {
-            /*position: fixed;    !* fixed header *!*/
-            /*top: 0;*/
             width: 100%;
             height: 10%;
             background-color: aqua;
@@ -30,11 +28,68 @@ echo <<<_END
             grid-column: 5;
             background-color: ghostwhite;
         }
+        
+        #catalogue-list {
+            display: none;
+            overflow: auto;
+        }
+        
+        #catalogue-list ul {
+            list-style: none;
+            padding: 0;
+            background-color: coral;
+        }
     </style>
-
-        <div id="logo-panel" class="text-center"><a href="/web/index.php">Logo</a></div>
-        <div id="catalogue-panel"><button type="button" class="btn">Catalogue</button></div>
     
+    <script>
+        function expandCategories() {
+            const catalogueList = document.getElementById("catalogue-list");
+            console.log(catalogueList.style.display);
+            if (catalogueList.style.display === '' || catalogueList.style.display === "none") {
+                catalogueList.style.display = "block";
+                catalogueList.style.position = "absolute";
+            } else {
+                catalogueList.style.display = "none";
+            }
+            console.log(catalogueList.style.display);
+        }
+    </script>
+    <div id="logo-panel" class="text-center"><a href="/web/index.php">Logo</a></div>
+_END;
+
+require_once "../db/db.php";
+
+$result = queryMySql("select category from amazon.categories");
+
+$categoryItemsDev = array();
+while ($row = $result->fetch_assoc()) {
+    $category = $row["category"];
+    $categoryUrl = sprintf("http://localhost:8888/web/category.php?category=%s", $category);
+    $categoryDiv = sprintf("
+        <li>
+            <div class='collapsable-item'>
+                <p><a href='$categoryUrl'>%s</a></p>
+            </div>
+        </li>
+    ", $category);
+    $categoryItemsDev[] = $categoryDiv;
+}
+
+$categoriesList = implode(" ", $categoryItemsDev);
+
+echo <<<_END
+    <div id="catalogue-panel">
+        <button type="button" class="btn" onclick="expandCategories()">Catalogue</button>
+        <div id="catalogue-list">
+            <ul>
+                $categoriesList
+            </ul>
+        </div>
+    </div>
+_END;
+
+
+echo <<<_END
         <div id="search-panel" class="input-group">
             <form action="/web/search.php" method="post">
                 <input type="search" placeholder="Search" name="search-query">
