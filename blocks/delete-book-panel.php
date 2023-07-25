@@ -42,17 +42,11 @@ if ($roleType == "admin") {
         </div>";
 }
 
-$dynamicPanel = "";
-// todo: сделать редактирование книжки
-//    $dynamicPanel = "
-//        <form method='post'>
-//            Title: <input type='text' name='add-book-title'>
-//            Description: <input type='text' name='add-book-description'>
-//            Price: <input type='number' name='add-book-price'>
-//            Category: <input type='number' name='add-book-category-id'>
-//            <input type='submit' value='Submit'>
-//        </form>
-//    ";
+$dynamicPanel = "
+        <form method='post'>
+            Title: <input type='text' name='delete-book-title'>
+        </form>
+    ";
 
 echo <<<_END
     <style>

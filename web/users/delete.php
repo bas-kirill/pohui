@@ -18,7 +18,7 @@ echo <<<_END
     </style>
 _END;
 
-require_once $host . "/blocks/delete-book-panel.php";
+require_once $host . "/blocks/delete-user-panel.php";
 
 echo "</main>";
 echo "<footer>";

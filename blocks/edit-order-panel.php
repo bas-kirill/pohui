@@ -40,19 +40,63 @@ if ($roleType == "admin") {
                <br>
             </form>
         </div>";
+} else {
+    $adminSectionPanelDiv = "";
 }
 
-$dynamicPanel = "";
-// todo: сделать редактирование книжки
-//    $dynamicPanel = "
-//        <form method='post'>
-//            Title: <input type='text' name='add-book-title'>
-//            Description: <input type='text' name='add-book-description'>
-//            Price: <input type='number' name='add-book-price'>
-//            Category: <input type='number' name='add-book-category-id'>
-//            <input type='submit' value='Submit'>
-//        </form>
-//    ";
+// check for security that item in users order
+$creationTs = $_GET["edit-order"];
+$booksWithUsernameAndBookIdSQL = "
+        select b.book_id, b.isbn_10, b.title, b.price, b.description, c.category, o.book_position from amazon.orders o
+        inner join amazon.users u on o.user_id = u.user_id
+        inner join amazon.books b on o.book_id = b.book_id
+        inner join amazon.categories c on b.category_id = c.category_id
+        where u.username = '$username' and o.order_creation_ts = '$creationTs'
+    ";
+
+$totalGoods = 0;
+$totalPrice = 0;
+$result = queryMySql($booksWithUsernameAndBookIdSQL);
+if ($result->num_rows == 0) {
+    $dynamicPanel = "<div>Your order is empty</div>";
+} else {
+    $bookDivs = array();
+    while ($row = $result->fetch_assoc()) {
+        $bookId = $row["book_id"];
+        $isbn = $row["isbn_10"];
+        $title = $row["title"];
+        $price = $row["price"];
+        $description = $row["description"];
+        $category = $row["category"];
+        $bookPosition = $row["book_position"];
+        $bookDiv = "
+                <div>
+                    Title: $title; Price: $price; Category: $category; Description: $description; Position: $bookPosition
+                    <form method='post'>
+                        <input type='hidden' name='book-id' value='$bookId'>
+                        <input type='hidden' name='book-position' value='$bookPosition'>
+                        <input type='hidden' name='creation-ts' value='$creationTs'>
+                        <input type='submit' value='Delete'>
+                    </form>
+                </div>";
+        $bookDivs[] = $bookDiv;
+        $totalGoods++;
+        $totalPrice += $price;
+    }
+    $orderDivsHtml = implode(" ", $bookDivs);
+
+    $cartSummary = "
+        <div>
+            <div>Total Goods: $totalGoods</div>
+            <div>Total Price: $totalPrice</div>
+        </div>";
+
+    $dynamicPanel = "
+            <div>Orders:</div>
+            $orderDivsHtml
+            $cartSummary
+        ";
+}
 
 echo <<<_END
     <style>
@@ -98,3 +142,5 @@ echo <<<_END
         </div>
     </div>
 _END;
+
+?>
