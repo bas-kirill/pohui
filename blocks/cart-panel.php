@@ -23,56 +23,54 @@ if (isset($_POST["checkout-book-ids"])) {
 
     $cartBookIds = $_POST["checkout-book-ids"];
     $bookIds = explode("~", $cartBookIds);
-    debutToConsole($bookIds);
+    debugToConsole($bookIds);
     foreach ($bookIds as $bookId) {
         // TODO: rewrite on one insert statemenet
         $createNewOrderSQL = "insert into amazon.orders (book_id, user_id) value ($bookId, $userId)";
         $result = queryMySql($createNewOrderSQL);
-        debutToConsole($bookId);
+        debugToConsole($bookId);
     }
     echo "<div>Successfully check out cart!</div>";
     return;
 }
 
 $booksIds = parseFromCookie("cart");
-
 if (count($booksIds) == 0) {
     $books_div_html = "<span>Your Cart is Empty</span>";
-} else {
-    $totalPrice = 0;
-    $book_divs = array();
-    foreach ($booksIds as $bookId) {
-        // todo: переписать на один запрос
-        $get_book_by_id_sql = "
-            select book_id, title, price, category from amazon.books b
-            inner join amazon.categories c on b.category_id = c.category_id
-            where book_id = $bookId
-        ";
-
-        $result = queryMySql($get_book_by_id_sql);
-
-        if (!$result) {
-            debutToConsole("can not get book id from database: $bookId");
-            continue;
-        }
-
-        $row = $result->fetch_assoc();
-        $bookId = $row["book_id"];
-        $title = $row["title"];
-        $price = $row["price"];
-        $category = $row["category"];
-
-        $book_div = "<div>Id: $bookId Title: $title; Price: $price; Category: $category</div>";
-        $book_divs[] = $book_div;
-
-        $totalPrice += $price;
-    }
-
-    $books_div_html = implode(" ", $book_divs);
+    return;
 }
 
-$goods = count($book_divs);
+$totalPrice = 0;
+$book_divs = array();
+foreach ($booksIds as $bookId) {
+    // todo: переписать на один запрос
+    $get_book_by_id_sql = "
+        select book_id, title, price, category from amazon.books b
+        inner join amazon.categories c on b.category_id = c.category_id
+        where book_id = $bookId
+    ";
 
+    $result = queryMySql($get_book_by_id_sql);
+
+    if (!$result) {
+        debugToConsole("can not get book id from database: $bookId");
+        continue;
+    }
+
+    $row = $result->fetch_assoc();
+    $bookId = $row["book_id"];
+    $title = $row["title"];
+    $price = $row["price"];
+    $category = $row["category"];
+
+    $book_div = "<div>Id: $bookId Title: $title; Price: $price; Category: $category</div>";
+    $book_divs[] = $book_div;
+
+    $totalPrice += $price;
+}
+
+$books_div_html = implode(" ", $book_divs);
+$goods = count($book_divs);
 $cartBookIds = implode("~", $booksIds);
 
 echo <<<_END

@@ -7,7 +7,7 @@ function sanitizeString($var) {
     return $var;
 }
 
-function debutToConsole($data) {
+function debugToConsole($data) {
     $consoleOutput = 'DEBUG: ';
     if (is_array($data) || is_object($data)) {
         $consoleOutput .= json_encode($data);
@@ -44,7 +44,7 @@ function addValueToCookie($cookieName, $value) {
 
 function parseFromCookie($cookieKey) {
     if (!array_key_exists($cookieKey, $_COOKIE)) {
-        debutToConsole(sprintf("cookie key=%s not found", $cookieKey));
+        debugToConsole(sprintf("cookie key=%s not found", $cookieKey));
         return array();
     }
 

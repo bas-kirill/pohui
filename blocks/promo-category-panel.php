@@ -26,7 +26,7 @@ while ($row = $result->fetch_assoc()) {
     $cnt++;
 }
 
-debutToConsole("found $cnt rows from MySQL");
+debugToConsole("found $cnt rows from MySQL");
 
 $books_part_one = implode(" ", array_slice($books_divs, 0, 3));
 $books_part_two = implode(" ", array_slice($books_divs, 3, 3));

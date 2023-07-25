@@ -12,7 +12,7 @@ if (isset($_SESSION["username"])) {
 }
 
 if (!$loggedIn) {
-    debutToConsole("not logged in");
+    debugToConsole("not logged in");
     die();
 }
 
@@ -20,9 +20,9 @@ if (isset($_POST["edit-address"]) && isset($_POST["edit-name"])) {
     $address = $_POST["edit-address"];
     $name = $_POST["edit-name"];
 
-    debutToConsole($address);
-    debutToConsole($name);
-    debutToConsole($username);
+    debugToConsole($address);
+    debugToConsole($name);
+    debugToConsole($username);
 
     if ($address == "" && $name == "") {
         echo "<div>Submitted empty fields</div>";
@@ -71,7 +71,7 @@ if (isset($_POST["add-user-name"])) {
     $address = $_POST["add-user-password"];
     $roleType = $_POST["add-user-role-type"];
 
-    debutToConsole($name);
+    debugToConsole($name);
 
     $addNewUserSQL = "
         insert into amazon.users (`name`, username, `password`, delivery_address, role_type, order_id) 

@@ -11,7 +11,7 @@ $sql = "
 
 $result = queryMySql($sql);
 if (!$result) {
-    debutToConsole("can not execute $sql");
+    debugToConsole("can not execute $sql");
     return;
 }
 

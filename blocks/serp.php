@@ -8,7 +8,7 @@ require_once "../db/db.php";
 if (isset($_GET["description"]) && isset($_GET["category"])) {
     $descriptionQueryParam = $_GET["description"];
     $categoryQueryParam = $_GET["category"];
-    debutToConsole(sprintf("searchQueryParam=%s; categoryQueryParam=%s", $descriptionQueryParam, $categoryQueryParam));
+    debugToConsole(sprintf("searchQueryParam=%s; categoryQueryParam=%s", $descriptionQueryParam, $categoryQueryParam));
     $sql = "
         select book_id, title, description, price, category from amazon.books b
         inner join amazon.categories c on b.category_id = c.category_id
@@ -17,7 +17,7 @@ if (isset($_GET["description"]) && isset($_GET["category"])) {
     ";
 } else if (isset($_GET["description"])) {
     $descriptionQueryParam = $_GET["description"];
-    debutToConsole(sprintf("searchQueryParam=%s", $descriptionQueryParam));
+    debugToConsole(sprintf("searchQueryParam=%s", $descriptionQueryParam));
     $sql = "
         select book_id, title, description, price, category from amazon.books b
         inner join amazon.categories c on b.category_id = c.category_id
@@ -26,7 +26,7 @@ if (isset($_GET["description"]) && isset($_GET["category"])) {
     ";
 } else if (isset($_GET["category"])) {
     $categoryQueryParam = $_GET["category"];
-    debutToConsole(sprintf("categoryQueryParam=%s", $categoryQueryParam));
+    debugToConsole(sprintf("categoryQueryParam=%s", $categoryQueryParam));
     $sql = "
         select book_id, title, description, price, category from amazon.books b
         inner join amazon.categories c on b.category_id = c.category_id
@@ -44,7 +44,7 @@ if (isset($_GET["description"]) && isset($_GET["category"])) {
 $result = queryMySql($sql);
 
 if (!$result) {
-    debutToConsole("can not execute query for searching books");
+    debugToConsole("can not execute query for searching books");
     return;
 }
 
@@ -62,7 +62,7 @@ while ($row = $result->fetch_assoc()) {
     $description = $row["description"];
     $price = $row["price"];
     $category = $row["category"];
-    debutToConsole("$title, $description, $price, $category");
+    debugToConsole("$title, $description, $price, $category");
     $bookUrl = sprintf("/web/book.php?id=%s", $book_id);
     $serp_div = "
         <div>
