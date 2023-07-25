@@ -1,4 +1,5 @@
 <?php
+require_once "../blocks/cart-cookie-handler.php";
 echo "<html>";
 echo "<head>";
 require_once "../blocks/head.php";

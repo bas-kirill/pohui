@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../blocks/cookie-handler.php";
+require_once "../blocks/book-cookie-handler.php";
 echo "<html>";
 echo "<head>";
 require_once "../blocks/head.php";

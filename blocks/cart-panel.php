@@ -1,28 +1,9 @@
 <?php
 
-echo <<<_END
-    <style>
-        #cart-panel {
-            display: grid;
-            background-color: bisque;
-        }
-        #books-to-buy {
-            grid-column: 1;
-            background-color: deepskyblue;
-        }
-        #checkout-panel {
-            grid-column: 2;
-            background-color: aquamarine;
-        }
-    </style>
-
-    <div id="cart-panel">
-_END;
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
-if (isset($_POST["cart-book-ids"])) {
-
+if (isset($_POST["checkout-book-ids"])) {
     if (isset($_SESSION["username"])) {
         $loggedIn = true;
         $username = $_SESSION["username"];
@@ -40,7 +21,7 @@ if (isset($_POST["cart-book-ids"])) {
     $row = $result->fetch_assoc();
     $userId = $row["user_id"];
 
-    $cartBookIds = $_POST["cart-book-ids"];
+    $cartBookIds = $_POST["checkout-book-ids"];
     $bookIds = explode("~", $cartBookIds);
     debutToConsole($bookIds);
     foreach ($bookIds as $bookId) {
@@ -50,21 +31,10 @@ if (isset($_POST["cart-book-ids"])) {
         debutToConsole($bookId);
     }
     echo "<div>Successfully check out cart!</div>";
-    setcookie("cart", "",  time()-2592000, "/");
     return;
 }
 
-function parseBookIdsFromCookie() {
-    if (!array_key_exists("cart", $_COOKIE)) {
-        debutToConsole("cookie with cart not found");
-        return array();
-    }
-
-    $bookIds = $_COOKIE["cart"];
-    return explode("~", $bookIds);
-}
-
-$booksIds = parseBookIdsFromCookie();
+$booksIds = parseFromCookie("cart");
 
 if (count($booksIds) == 0) {
     $books_div_html = "<span>Your Cart is Empty</span>";
@@ -106,15 +76,31 @@ $goods = count($book_divs);
 $cartBookIds = implode("~", $booksIds);
 
 echo <<<_END
-    <div id="books-to-buy">$books_div_html</div>
-    <div id="checkout-panel">
-        <div>Items: $goods</div>
-        <div>Total price: $totalPrice</div>   
-        <form method="post">
-            <input type="hidden" name="cart-book-ids" value="$cartBookIds">
-            <input type="submit">
-        </form>
+    <style>
+        #cart-panel {
+            display: grid;
+            background-color: bisque;
+        }
+        #books-to-buy {
+            grid-column: 1;
+            background-color: deepskyblue;
+        }
+        #checkout-panel {
+            grid-column: 2;
+            background-color: aquamarine;
+        }
+    </style>
+
+    <div id="cart-panel">
+        <div id="books-to-buy">$books_div_html</div>
+        <div id="checkout-panel">
+            <div>Items: $goods</div>
+            <div>Total price: $totalPrice</div>   
+            <form method="post">
+                <input type="hidden" name="checkout-book-ids" value="$cartBookIds">
+                <input type="submit">
+            </form>
+        </div>
     </div>
 _END;
-echo "</div>"
 ?>
