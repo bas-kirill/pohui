@@ -1,6 +1,7 @@
 <?php
 
-require_once "../util/functions.php";
+$host = $_SERVER["DOCUMENT_ROOT"];
+require_once $host . "/util/functions.php";
 
 $db_host = "localhost";
 $db_name = "amazon";

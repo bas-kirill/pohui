@@ -13,7 +13,7 @@ if (isset($_POST["login-username"])) {
     }
 
     $usersSQL = "
-        select user_id, username, password, role_type from amazon.users 
+        select user_id, name, username, password, role_type from amazon.users 
         where username = '$username' and password = '$password'";
 
     $result = queryMySql($usersSQL);
@@ -24,11 +24,13 @@ if (isset($_POST["login-username"])) {
 
     $row = $result->fetch_assoc();
     $userId = $row["user_id"];
+    $name = $row["name"];
     $username = $row["username"];
     $password = $row["password"];
     $roleType = $row["role_type"];
 
     $_SESSION["user_id"] = $userId;
+    $_SESSION["name"] = $name;
     $_SESSION["username"] = $username;
     $_SESSION["password"] = $password;
     $_SESSION["role_type"] = $roleType;

@@ -7,15 +7,18 @@ require_once "../blocks/pojo.php";
 
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
+    $name = $_SESSION["name"];
     $username = $_SESSION["username"];
     $userId = $_SESSION["user_id"];
+    $roleType = $_SESSION["role_type"];
 } else {
     $loggedIn = false;
 }
 
 if (!$loggedIn) {
     debugToConsole("not logged in");
-    die();
+    echo "<div>You need to log to see page</div>";
+    return;
 }
 
 if (isset($_POST["edit-address"]) && isset($_POST["edit-name"])) {
@@ -66,32 +69,32 @@ if (isset($_POST["delete-approved"])) {
     return;
 }
 
-if (isset($_POST["add-user-name"])) {
-    $name = $_POST["add-user-name"];
-    $username = $_POST["add-user-username"];
-    $password = $_POST["add-user-password"];
-    $address = $_POST["add-user-password"];
-    $roleType = $_POST["add-user-role-type"];
+if (isset($_POST["add-users-name"])) {
+    $name = $_POST["add-users-name"];
+    $username = $_POST["add-users-username"];
+    $password = $_POST["add-users-password"];
+    $address = $_POST["add-users-password"];
+    $roleType = $_POST["add-users-role-type"];
 
     debugToConsole($name);
 
     $addNewUserSQL = "
-        insert into amazon.users (`name`, username, `password`, delivery_address, role_type, order_id) 
-        value ('$name', '$username', '$password', '$address', '$roleType', null)";
+        insert into amazon.users (`name`, username, `password`, delivery_address, role_type) 
+        value ('$name', '$username', '$password', '$address', '$roleType')";
 
     log_debug($addNewUserSQL);
 
     $result = queryMySql($addNewUserSQL);
-    echo "<div>Created new user with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
+    echo "<div>Created new users with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
     return;
 }
 
-if (isset($_POST["edit-user-name"])) {
-    $name = $_POST["add-user-name"];
-    $username = $_POST["add-user-username"];
-    $password = $_POST["add-user-password"];
-    $address = $_POST["add-user-password"];
-    $roleType = $_POST["add-user-role-type"];
+if (isset($_POST["edit-users-name"])) {
+    $name = $_POST["add-users-name"];
+    $username = $_POST["add-users-username"];
+    $password = $_POST["add-users-password"];
+    $address = $_POST["add-users-password"];
+    $roleType = $_POST["add-users-role-type"];
 
     // todo: сделать проверки
     $addNewUserSQL = "
@@ -101,15 +104,15 @@ if (isset($_POST["edit-user-name"])) {
     ";
 
     $result = queryMySql($addNewUserSQL);
-    echo "<div>Created new user with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
+    echo "<div>Created new users with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
     return;
 }
 
-if (isset($_POST["delete-user-username"])) {
-    $username = $_POST["delete-user-username"];
+if (isset($_POST["delete-users-username"])) {
+    $username = $_POST["delete-users-username"];
     $deleteUserSQL = "delete from amazon.users where username = '$username'";
     $result = queryMySql($deleteUserSQL);
-    echo "<div>Deleted user with username = '$username'</div>";
+    echo "<div>Deleted users='$username'</div>";
     return;
 }
 
@@ -151,31 +154,26 @@ if (isset($_POST["book-id"]) && isset($_POST["book-position"]) && isset($_POST["
     $result = queryMySql($deleteSelectedBookIdsSQL);
 }
 
-
-$selectUserSQL = "select name, username, role_type from amazon.users where username='$username'";
-
-$result = queryMySql($selectUserSQL);
-
-if ($result->num_rows == 0) {
-    log_error("got 0 users by '$username', but user authorized!");
-    die();
-}
-
-$row = $result->fetch_assoc();
-$name = $row["name"];
-$username = $row["username"];
-$roleType = $row["role_type"];
-
 $adminSectionPanelDiv = "";
 if ($roleType == "admin") {
     $adminSectionPanelDiv = "
         <div id='admin-actions-panel'>
-            <form method='get'><input type='submit' name='add-user' value='Add User'></form>
-            <form method='get'><input type='submit' name='edit-user' value='Edit User'></form>
-            <form method='get'><input type='submit' name='delete-user' value='Delete User'></form>
-            <form method='get'><input type='submit' name='add-book' value='Add Book'></form>
-            <form method='get'><input type='submit' name='edit-book' value='Edit Book'></form>
-            <form method='get'><input type='submit' name='delete-book' value='Delete Book'></form>
+            <form action='/web/navigate.php' method='post'>
+               <input type='submit' name='users' value='Users'>
+               <br>
+               <input type='submit' name='add-users' value='Add User'>
+               <br>
+               <input type='submit' name='edit-users' value='Edit User'>
+               <br>
+               <input type='submit' name='delete-users' value='Delete User'>
+               <br>
+               <input type='submit' name='add-book' value='Add Book'>
+               <br>
+               <input type='submit' name='edit-book' value='Edit Book'>
+               <br>
+               <input type='submit' name='delete-book' value='Delete Book'>
+               <br>
+            </form>
         </div>";
 }
 
@@ -195,35 +193,10 @@ if ($_GET["edit"]) {
             <input type='submit' name='delete-approved' value='Yes'>
         </form>
     ";
-} else if ($_GET["add-user"]) {
-    $dynamicPanel = "
-        <form method='post'>
-            Name: <input type='text' name='add-user-name' required>
-            Username: <input type='text' name='add-user-username' required>
-            Password: <input type='text' name='add-user-password' required>
-            Role: <input type='text' name='add-user-role-type' required>    <!-- Set up enum values -->
-            Address: <input type='text' name='add-user-address' required>
-            <input type='submit' value='Submit'>
-        </form>
-    ";
-} else if ($_GET["edit-user"]) {
-    $dynamicPanel = "
-        <form method='post'>
-            Name: <input type='text' name='edit-user-name'>
-            Username: <input type='text' name='edit-user-username'>
-            Password: <input type='text' name='edit-user-password'>
-            Role: <input type='text' name='edit-user-role-type'>    <!-- Set up enum values -->
-            Address: <input type='text' name='edit-user-address'>
-            <input type='submit' value='Submit'>
-        </form>
-    ";
-} else if (isset($_GET["delete-user"])) {
-    $dynamicPanel = "
-        <form method='post'>
-            Username: <input type='text' name='delete-user-username'>
-            <input type='submit' value='Submit'>
-        </form>
-    ";
+} else if ($_GET["edit-users"]) {
+
+} else if (isset($_GET["delete-users"])) {
+
 } else if (isset($_GET["add-book"])) {
     $dynamicPanel = "
         <form method='post'>
@@ -252,7 +225,7 @@ if ($_GET["edit"]) {
         </form>
     ";
 } else if (isset($_GET["edit-order"])) {
-    // check for security that item in user order
+    // check for security that item in users order
     $creationTs = $_GET["edit-order"];
     $booksWithUsernameAndBookIdSQL = "
         select b.book_id, b.isbn_10, b.title, b.price, b.description, c.category, o.book_position from amazon.orders o

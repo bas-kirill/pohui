@@ -57,7 +57,8 @@ echo <<<_END
     <div id="logo-panel" class="text-center"><a href="/web/index.php">Logo</a></div>
 _END;
 
-require_once "../db/db.php";
+$host = $_SERVER["DOCUMENT_ROOT"];
+require_once $host . "/db/db.php";
 
 $result = queryMySql("select category from amazon.categories");
 
