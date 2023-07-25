@@ -63,7 +63,7 @@ while ($row = $result->fetch_assoc()) {
     $price = $row["price"];
     $category = $row["category"];
     debugToConsole("$title, $description, $price, $category");
-    $bookUrl = sprintf("/web/book.php?id=%s", $book_id);
+    $bookUrl = sprintf("/web/books/book.php?id=%s", $book_id);
     $serp_div = "
         <div>
             <a href=$bookUrl>Id: $book_id; Title: $title; Description: $description; Price: $price; Category: $category</a>

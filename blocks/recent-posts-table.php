@@ -20,7 +20,7 @@ while ($row = $result->fetch_assoc()) {
     $category = $row["category"];
     $book_div = "
     <div class=\"col-md-4\">
-        <a href='/web/book.php?id=$id'>ISBN: $isbn; Id $id; Title: $title; Description: $description; Price: $price; Category: $category</a>
+        <a href='/web/books/book.php?id=$id'>ISBN: $isbn; Id $id; Title: $title; Description: $description; Price: $price; Category: $category</a>
     </div>";
     $books_divs[] = $book_div;
     $cnt++;

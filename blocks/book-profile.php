@@ -33,7 +33,7 @@ $category = $row["category"];
 
 $book_div_html = "
 <div>
-    <a href='/web/book.php?id=$bookId'>Id: $bookId; Title: $title; Description: $description; Price: $price; Category: $category</a>
+    <a href='/web/books/book.php?id=$bookId'>Id: $bookId; Title: $title; Description: $description; Price: $price; Category: $category</a>
     <form method='post'>
         <input type='hidden' name='book-id-to-cart-cookie' value='$bookId'>
         <button type='submit' class='button'>Add To Cart</button>
