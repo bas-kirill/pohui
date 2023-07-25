@@ -21,11 +21,15 @@ if (isset($_POST["checkout-book-ids"])) {
     $bookIds = explode("~", $cartBookIds);
     debugToConsole($bookIds);
     $creationTs = date('Y-m-d H:i:s');
+    $bookIdx = 1;
     foreach ($bookIds as $bookId) {
         // TODO: rewrite on one insert statemenet
-        $createNewOrderSQL = "insert into amazon.orders (book_id, user_id, creation_ts) value ($bookId, $userId, '$creationTs')";
+        $createNewOrderSQL = "
+            insert into amazon.orders (book_id, user_id, order_creation_ts, book_position) 
+            value ($bookId, $userId, '$creationTs', $bookIdx)
+        ";
         $result = queryMySql($createNewOrderSQL);
-        debugToConsole($bookId);
+        $bookIdx++;
     }
     echo "<div>Successfully check out cart!</div>";
     return;

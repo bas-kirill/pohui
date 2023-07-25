@@ -8,6 +8,7 @@ require_once "../blocks/pojo.php";
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
     $username = $_SESSION["username"];
+    $userId = $_SESSION["user_id"];
 } else {
     $loggedIn = false;
 }
@@ -137,25 +138,16 @@ if (isset($_POST["delete-book"])) {
     return;
 }
 
-if (isset($_POST["edit-order-delete-position"])) {
-    $bookISBN = $_POST["edit-order-delete-position"];
-
-    $selectOrderForUserWithPositionSQL = "
-        select o.book_id from amazon.orders o
-        inner join amazon.users u on o.user_id = u.user_id
-        inner join amazon.books b on o.book_id = b.book_id
-        where u.username = '$username' and b.isbn_10 = '$bookISBN'";
-
-    $result = queryMySql($selectOrderForUserWithPositionSQL);
-    $booksIds = array();
-    while ($row = $result->fetch_assoc()) {
-        $bookId = $row["book_id"];
-        $booksIds[] = $bookId;
-    }
-
-    $bookIds = implode(", ", $booksIds);
-
-    $deleteSelectedBookIdsSQL = "delete from amazon.orders where book_id in ($bookIds)";
+if (isset($_POST["book-id"]) && isset($_POST["book-position"]) && isset($_POST["creation-ts"])) {
+    $bookId = $_POST["book-id"];
+    $bookPosition = $_POST["book-position"];
+    $orderCreationTs = $_POST["creation-ts"];
+    $deleteSelectedBookIdsSQL = "
+        delete from amazon.orders
+        where user_id = '$userId' and
+              order_creation_ts = '$orderCreationTs' and
+              book_id = '$bookId' and 
+              book_position = '$bookPosition'";
     $result = queryMySql($deleteSelectedBookIdsSQL);
 }
 
@@ -261,13 +253,13 @@ if ($_GET["edit"]) {
     ";
 } else if (isset($_GET["edit-order"])) {
     // check for security that item in user order
-    $bookId = $_GET["edit-order-book-id"];
+    $creationTs = $_GET["edit-order"];
     $booksWithUsernameAndBookIdSQL = "
-        select b.isbn_10, b.title, b.price, b.description, c.category from amazon.orders o
+        select b.book_id, b.isbn_10, b.title, b.price, b.description, c.category, o.book_position from amazon.orders o
         inner join amazon.users u on o.user_id = u.user_id
         inner join amazon.books b on o.book_id = b.book_id
         inner join amazon.categories c on b.category_id = c.category_id
-        where u.username = '$username'
+        where u.username = '$username' and o.order_creation_ts = '$creationTs'
     ";
 
     $totalGoods = 0;
@@ -278,16 +270,20 @@ if ($_GET["edit"]) {
     } else {
         $bookDivs = array();
         while ($row = $result->fetch_assoc()) {
+            $bookId = $row["book_id"];
             $isbn = $row["isbn_10"];
             $title = $row["title"];
             $price = $row["price"];
             $description = $row["description"];
             $category = $row["category"];
+            $bookPosition = $row["book_position"];
             $bookDiv = "
                 <div>
-                    Title: $title; Price: $price; Category: $category; Description: $description
+                    Title: $title; Price: $price; Category: $category; Description: $description; Position: $bookPosition
                     <form method='post'>
-                        <input type='hidden' name='edit-order-delete-position' value='$isbn'>
+                        <input type='hidden' name='book-id' value='$bookId'>
+                        <input type='hidden' name='book-position' value='$bookPosition'>
+                        <input type='hidden' name='creation-ts' value='$creationTs'>
                         <input type='submit' value='Delete'>
                     </form>
                 </div>";
@@ -311,12 +307,13 @@ if ($_GET["edit"]) {
     }
 } else {
     $ordersForUserSQL = "
-        select b.book_id, b.isbn_10, b.title, b.description, b.price, c.category, o.creation_ts from amazon.orders o
+        select b.book_id, b.isbn_10, b.title, b.description, b.price, c.category, o.order_creation_ts, o.book_position
+        from amazon.orders o
         inner join amazon.books b on o.book_id = b.book_id
         inner join amazon.users u on o.user_id = u.user_id
         inner join amazon.categories c on b.category_id = c.category_id
         where u.username = '$username'
-        order by o.creation_ts desc
+        order by o.order_creation_ts desc
     ";
 
     $totalGoods = 0;
@@ -333,14 +330,21 @@ if ($_GET["edit"]) {
             $price = $row["price"];
             $description = $row["description"];
             $category = $row["category"];
-            $creationTs = $row["creation_ts"];
+            $creationTs = $row["order_creation_ts"];
+            $position = $row["book_position"];
 
-            $book = new Book($isbn, $title, $price, $description, $category);
+            $book = new Book($isbn, $title, $price, $description, $category, $position);
             if (isset($creationTsToBooks[$creationTs]) && !in_array($creationTs, $creationTsToBooks)) {
                 $creationTsToBooks[$creationTs][] = $book;
             } elseif (!isset($creationTsToBooks[$creationTs])) {
                 $creationTsToBooks[$creationTs] = array($book);
             }
+        }
+
+        foreach ($creationTsToBooks as $creationTs => $books) {
+            usort($books, function ($lhs, $rhs) {
+                return $lhs->position < $rhs->position;
+            });
         }
 
         $totalGoods = 0;
@@ -351,15 +355,17 @@ if ($_GET["edit"]) {
             $bookDivs = array();
             $orderTotalGoods = 0;
             $orderTotalPrice = 0;
+            $bookIdx = 1;
             foreach ($books as $book) {
                 $bookDiv = "
                     <div>
-                        ISBN: $book->isbn; Title: $book->title; Price: $book->price; Category: $book->category; Description: $book->description
+                       $bookIdx) ISBN: $book->isbn; Title: $book->title; Price: $book->price; Category: $book->category; Description: $book->description; Position: $book->position;
                     </div>
                 ";
                 $bookDivs[] = $bookDiv;
                 $orderTotalGoods++;
                 $orderTotalPrice += $book->price;
+                $bookIdx++;
             }
             $totalGoods += $orderTotalGoods;
             $totalPrice += $orderTotalPrice;
@@ -374,7 +380,8 @@ if ($_GET["edit"]) {
                     </div>
                     <div>
                         <form method='get'>
-                            <input type='submit' name='edit-order' value='Edit Order'
+                            <input type='hidden' name='edit-order' value='$creationTs'>
+                            <input type='submit' value='Edit Order'>
                         </form>
                     </div>
                     <div>
