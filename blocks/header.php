@@ -64,7 +64,7 @@ $result = queryMySql("select category from amazon.categories");
 $categoryItemsDev = array();
 while ($row = $result->fetch_assoc()) {
     $category = $row["category"];
-    $categoryUrl = sprintf("http://localhost:8888/web/category.php?category=%s", $category);
+    $categoryUrl = sprintf("http://localhost:8888/web/search.php?category=%s", $category);
     $categoryDiv = sprintf("
         <li>
             <div class='collapsable-item'>
@@ -87,12 +87,17 @@ echo <<<_END
         </div>
     </div>
 _END;
-
+if (isset($_GET["category"])) {
+    $categoryQueryParam = $_GET["category"];
+} else {
+    $categoryQueryParam = "";
+}
 
 echo <<<_END
         <div id="search-panel" class="input-group">
-            <form action="/web/search.php" method="post">
-                <input type="search" placeholder="Search" name="search-query">
+            <form action="/web/search.php" method="get">
+                <input type="hidden" name="category" value="$categoryQueryParam">
+                <input type="search" placeholder="Search" name="description">
             </form>
         </div>
         <div id="cart-panel">

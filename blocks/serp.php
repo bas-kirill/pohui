@@ -3,15 +3,43 @@
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
-$searchQuery = $_POST["search-query"];
-debutToConsole("search query $searchQuery");
 
-$sql = "
-    select book_id, title, description, price, category from amazon.books b
-    inner join amazon.categories c on b.category_id = c.category_id
-    where description like '%$searchQuery%'
-    order by creation_timestamp desc;
-";
+
+if (isset($_GET["description"]) && isset($_GET["category"])) {
+    $descriptionQueryParam = $_GET["description"];
+    $categoryQueryParam = $_GET["category"];
+    debutToConsole(sprintf("searchQueryParam=%s; categoryQueryParam=%s", $descriptionQueryParam, $categoryQueryParam));
+    $sql = "
+        select book_id, title, description, price, category from amazon.books b
+        inner join amazon.categories c on b.category_id = c.category_id
+        where (category = '' or category = '$categoryQueryParam') and description like '%$descriptionQueryParam%'
+        order by creation_timestamp desc;
+    ";
+} else if (isset($_GET["description"])) {
+    $descriptionQueryParam = $_GET["description"];
+    debutToConsole(sprintf("searchQueryParam=%s", $descriptionQueryParam));
+    $sql = "
+        select book_id, title, description, price, category from amazon.books b
+        inner join amazon.categories c on b.category_id = c.category_id
+        where description like '%$descriptionQueryParam%'
+        order by creation_timestamp desc;
+    ";
+} else if (isset($_GET["category"])) {
+    $categoryQueryParam = $_GET["category"];
+    debutToConsole(sprintf("categoryQueryParam=%s", $categoryQueryParam));
+    $sql = "
+        select book_id, title, description, price, category from amazon.books b
+        inner join amazon.categories c on b.category_id = c.category_id
+        where category = '$categoryQueryParam'
+        order by creation_timestamp desc;
+    ";
+} else {
+    $sql = "
+        select book_id, title, description, price, category from amazon.books b
+        inner join amazon.categories c on b.category_id = c.category_id
+        order by creation_timestamp desc;
+    ";
+}
 
 $result = queryMySql($sql);
 
@@ -22,7 +50,7 @@ if (!$result) {
 
 if ($result->num_rows == 0) {
     echo <<<_END
-    <div>Not found books by query '$searchQuery'
+    <div>Not found</div>
 _END;
     return;
 }
@@ -35,9 +63,10 @@ while ($row = $result->fetch_assoc()) {
     $price = $row["price"];
     $category = $row["category"];
     debutToConsole("$title, $description, $price, $category");
+    $bookUrl = sprintf("/web/book.php?id=%s", $book_id);
     $serp_div = "
         <div>
-            <a href='/web/book.php?id=$book_id'>Id: $book_id; Title: $title; Description: $description; Price: $price; Category: $category</a>
+            <a href=$bookUrl>Id: $book_id; Title: $title; Description: $description; Price: $price; Category: $category</a>
         </div>";
     $serp_divs[] = $serp_div;
 }
