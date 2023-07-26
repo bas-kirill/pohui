@@ -44,10 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $rolePOST = $requestBody["role"];
     $addressPOST = $requestBody["address"];
 
-    error_log("abacaba");
-
-    error_log(sprintf("username=%s;name=%s;password=%s;role=%s;address=%s", $usernamePOST, $namePOST, $passwordPOST, $rolePOST, $addressPOST));
-
     $updateUserByUsernameSQL = "
         update amazon.users
         set name = '$namePOST', 

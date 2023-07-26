@@ -43,10 +43,6 @@ if ($roleType == "admin") {
 }
 
 $dynamicPanel = "
-        <form method='post'>
-            Username: <input type='text' name='delete-users-username'>
-            <input type='submit' value='Submit'>
-        </form>
     ";
 
 echo <<<_END
@@ -89,7 +85,38 @@ echo <<<_END
         <div id="orders-panel">
             <div>Name: $name; Username: $username; Role Type: $roleType</div>
             <hr>
-            $dynamicPanel
+            <form id="delete-user-by-username-form" method='post'>
+                Username: <input type='text' name='username'>
+                <input type='submit' value='Delete'>
+            </form>
+            
+            <script>
+                const deleteUserByUsernameForm = document.getElementById('delete-user-by-username-form');
+                deleteUserByUsernameForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const data = new FormData(this);
+                    console.log(data.get('username'));
+                    fetch('/blocks/delete-user.php', {
+                        method: 'POST',
+                        body: data
+                    })
+                    .then(response => {
+                        if (response.status === 200) {
+                            alert('User deleted');
+                        } else if (response.status === 404) {
+                            alert('User does not exists');
+                            throw new Error('User does not exists: ' + response);
+                        } else if (response.status === 500) {
+                            alert('Server Error');
+                            throw new Error('Server error: ' + response);
+                        } else {
+                            alert('Unexpected Error');
+                            throw new Error('Unexpected HTTP response: ' + response.status);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error))
+                });
+            </script>
         </div>
     </div>
 _END;

@@ -18,7 +18,7 @@ if (isset($_SESSION["username"])) {
 }
 
 if (!$loggedIn) {
-    $dynamicPanel = "<div>Need to log in to see page</div>";
+    echo "<div>Need to log in to see page</div>";
     return;
 }
 
@@ -116,7 +116,7 @@ $dynamicPanel = <<<EOD
                     
                     var submitButton = document.createElement('input');
                     submitButton.type = 'submit';
-                    submitButton.value = 'Send';
+                    submitButton.value = 'Edit';
                     
                     userDataForm.append('Name:');
                     userDataForm.appendChild(nameInput);
@@ -183,17 +183,6 @@ $dynamicPanel = <<<EOD
             });
         </script>
 EOD;
-
-//<br>
-//Password: <input type='text' name='edit-users-password'>
-//            <br>
-//Role:
-//            <select name='role' required>
-//$roleOptionsHtml
-//            </select>
-//            <br>
-//Address: <input type='text' name='edit-users-address'>
-//            <br>
 
 echo <<<_END
     <style>

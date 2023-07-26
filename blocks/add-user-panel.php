@@ -70,7 +70,7 @@ $dynamicPanel = "
             <br>
             Address: <input type='text' name='address' required>
             <br>
-            <input type='submit' value='Submit'>
+            <input type='submit' value='Add'>
         </form>
         
         <script>
