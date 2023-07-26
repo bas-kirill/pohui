@@ -2,11 +2,12 @@
 session_start();
 echo "<html>";
 echo "<head>";
-require_once "../blocks/head.php";
+$host = $_SERVER["DOCUMENT_ROOT"];
+require_once $host . "/blocks/head.php";
 echo "</head>";
 echo "<body>";
 echo "<header>";
-require_once "../blocks/header.php";
+require_once $host . "/blocks/header.php";
 echo "</header>";
 echo "<main>";
 echo <<<_END
@@ -17,10 +18,10 @@ echo <<<_END
         }
     </style>
 _END;
-require_once "../blocks/serp.php";
+require_once $host . "/blocks/serp.php";
 echo "</main>";
 echo "<footer>";
-require_once "../blocks/footer.php";
+require_once $host . "/blocks/footer.php";
 echo "</footer>";
 echo "</body>";
 echo "</html>";

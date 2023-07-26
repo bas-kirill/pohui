@@ -1,7 +1,8 @@
 <?php
 echo "<html>";
 echo "<head>";
-require_once "../blocks/head.php";
+$host = $_SERVER["DOCUMENT_ROOT"];
+require_once $host . "/blocks/head.php";
 echo "</head>";
 echo "<body>";
 echo "<header>";
@@ -16,10 +17,10 @@ echo <<<_END
         }
     </style>
 _END;
-require_once "../blocks/login-panel.php";
+require_once $host . "/blocks/login-panel.php";
 echo "</main>";
 echo "<footer>";
-require_once "../blocks/footer.php";
+require_once $host . "/blocks/footer.php";
 echo "</footer>";
 echo "</body>";
 echo "</html>";
