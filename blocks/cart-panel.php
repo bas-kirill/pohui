@@ -3,6 +3,8 @@
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
+global $connection;
+
 if (isset($_POST["checkout-book-ids"])) {
     if (isset($_SESSION["username"])) {
         $loggedIn = true;
@@ -28,7 +30,7 @@ if (isset($_POST["checkout-book-ids"])) {
             insert into amazon.orders (book_id, user_id, order_creation_ts, book_position) 
             value ($bookId, $userId, '$creationTs', $bookIdx)
         ";
-        $result = queryMySql($createNewOrderSQL);
+        $result = $connection->query($createNewOrderSQL);
         $bookIdx++;
     }
     echo "<div>Successfully check out cart!</div>";
@@ -49,7 +51,7 @@ if (count($booksIds) == 0) {
         where book_id = $bookId
     ";
 
-        $result = queryMySql($get_book_by_id_sql);
+        $result = $connection->query($get_book_by_id_sql);
 
         if (!$result) {
             debugToConsole("can not get book id from database: $bookId");

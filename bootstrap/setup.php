@@ -1,13 +1,14 @@
 <?php
 
-    require_once "../db/db.php";
+require_once "../db/db.php";
+global $connection;
 
 createTable("amazon.categories", "
     category_id int auto_increment primary key,
     category    varchar(255) not null
 ");
 
-queryMySql("
+$connection->query("
 INSERT INTO amazon.categories (category) VALUES
     ('Fiction'),
     ('Non-Fiction'),
@@ -25,7 +26,7 @@ createTable("amazon.books", "
     FULLTEXT (description)
 ");
 
-queryMySql("
+$connection->query("
 INSERT INTO amazon.books (title, description, price, creation_timestamp, category_id) VALUES
     ('Book 1', 'Description of Book 1', '19.99', '2023-07-01 10:00:00', 1),
     ('Book 2', 'Description of Book 2', '24.99', '2023-07-02 11:30:00', 1),

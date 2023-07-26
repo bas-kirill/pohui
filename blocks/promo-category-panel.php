@@ -2,7 +2,9 @@
 
 require_once "../db/db.php";
 
-$result = queryMySql("
+global $connection;
+
+$result = $connection->query("
     select book_id, title, description, price, category from amazon.books b
     inner join amazon.categories c on b.category_id = c.category_id
     where category = 'Fiction'

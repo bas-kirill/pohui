@@ -3,7 +3,7 @@
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
-
+global $connection;
 
 if (isset($_GET["description"]) && isset($_GET["category"])) {
     $descriptionQueryParam = $_GET["description"];
@@ -41,7 +41,7 @@ if (isset($_GET["description"]) && isset($_GET["category"])) {
     ";
 }
 
-$result = queryMySql($sql);
+$result = $connection->query($sql);
 
 if (!$result) {
     debugToConsole("can not execute query for searching books");

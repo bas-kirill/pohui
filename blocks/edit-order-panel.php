@@ -5,6 +5,8 @@ require_once $host . "/log/log.php";
 require_once $host . "/util/functions.php";
 require_once $host . "/db/db.php";
 
+global $connection;
+
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
     $name = $_SESSION["name"];
@@ -56,7 +58,7 @@ $booksWithUsernameAndBookIdSQL = "
 
 $totalGoods = 0;
 $totalPrice = 0;
-$result = queryMySql($booksWithUsernameAndBookIdSQL);
+$result = $connection->query($booksWithUsernameAndBookIdSQL);
 if ($result->num_rows == 0) {
     $dynamicPanel = "<div>Your order is empty</div>";
 } else {

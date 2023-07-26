@@ -5,6 +5,8 @@ require_once "../util/functions.php";
 require_once "../db/db.php";
 require_once "../blocks/pojo.php";
 
+global $connection;
+
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
     $name = $_SESSION["name"];
@@ -39,21 +41,21 @@ if (isset($_POST["edit-address"]) && isset($_POST["edit-name"])) {
             update amazon.users set name = '$name', delivery_address='$address' 
             where username = '$username'";
 
-        $result = queryMySql($updateUserProfileSQL);
+        $result = $connection->query($updateUserProfileSQL);
         echo "<div>User profile with username='$username' updated with new address '$address' and name '$name'</div>";
         return;
     }
 
     if ($address != "") {
         $updateUserProfileSQL = "update amazon.users set delivery_address = '$address' where username = '$username'";
-        $result = queryMySql($updateUserProfileSQL);
+        $result = $connection->query($updateUserProfileSQL);
         echo "<div>User profile with username='$username' updated with new address '$address'</div>";
         return;
     }
 
     if ($name != "") {
         $updateUserProfileSQL = "update amazon.users set name = '$name' where username = '$username'";
-        $result = queryMySql($updateUserProfileSQL);
+        $result = $connection->query($updateUserProfileSQL);
         echo "<div>User profile with username='$username' u;dated with new name '$name'</div>";
         return;
     }
@@ -63,7 +65,7 @@ if (isset($_POST["edit-address"]) && isset($_POST["edit-name"])) {
 
 if (isset($_POST["delete-approved"])) {
     $deleteUserProfileSQL = "delete from amazon.users where username = '$username'";
-    $result = queryMySql($deleteUserProfileSQL);
+    $result = $connection->query($deleteUserProfileSQL);
     echo "<div>User with username='$username' deleted</div>";
     destroySession();
     return;
@@ -84,7 +86,7 @@ if (isset($_POST["add-users-name"])) {
 
     log_debug($addNewUserSQL);
 
-    $result = queryMySql($addNewUserSQL);
+    $result = $connection->query($addNewUserSQL);
     echo "<div>Created new users with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
     return;
 }
@@ -99,11 +101,11 @@ if (isset($_POST["edit-users-name"])) {
     // todo: сделать проверки
     $addNewUserSQL = "
         update amazon.users set name = '$name', password = '$password',
-                                delivery_address = '$address', role_type = '$roleType'
+                                delivery_address = '$address', role_id = '$roleType'
         where username = '$username';
     ";
 
-    $result = queryMySql($addNewUserSQL);
+    $result = $connection->query($addNewUserSQL);
     echo "<div>Created new users with name='$name', username='$username', password='$password', address='$address', role='$roleType'</div>";
     return;
 }
@@ -111,7 +113,7 @@ if (isset($_POST["edit-users-name"])) {
 if (isset($_POST["delete-users-username"])) {
     $username = $_POST["delete-users-username"];
     $deleteUserSQL = "delete from amazon.users where username = '$username'";
-    $result = queryMySql($deleteUserSQL);
+    $result = $connection->query($deleteUserSQL);
     echo "<div>Deleted users='$username'</div>";
     return;
 }
@@ -124,7 +126,7 @@ if (isset($_POST["add-book-title"])) {
     $addNewBookSQL = "
         insert into amazon.books (title, description, price, creation_timestamp, category_id)
         values ('$title', '$description', $price, 'current_timestamp', $categoryId)";
-    $result = queryMySql($addNewBookSQL);
+    $result = $connection->query($addNewBookSQL);
     echo "<div>Created new book with title = '$title'</div>";
     return;
 }
@@ -136,7 +138,7 @@ if (isset($_POST["edit-book"])) {
 if (isset($_POST["delete-book"])) {
     $title = $_POST["delete-book-title"];
     $deleteBookSQL = "delete from amazon.books where title = '$title'";
-    $result = queryMySql($deleteBookSQL);
+    $result = $connection->query($deleteBookSQL);
     echo "<div>Deleted book with title '$title'</div>";
     return;
 }
@@ -151,7 +153,7 @@ if (isset($_POST["book-id"]) && isset($_POST["book-position"]) && isset($_POST["
               order_creation_ts = '$orderCreationTs' and
               book_id = '$bookId' and 
               book_position = '$bookPosition'";
-    $result = queryMySql($deleteSelectedBookIdsSQL);
+    $result = $connection->query($deleteSelectedBookIdsSQL);
 }
 
 $adminSectionPanelDiv = "";
@@ -218,7 +220,7 @@ if ($_GET["edit"]) {
 
     $totalGoods = 0;
     $totalPrice = 0;
-    $result = queryMySql($ordersForUserSQL);
+    $result = $connection->query($ordersForUserSQL);
     if ($result->num_rows == 0) {
         $dynamicPanel = "<div>Your order is empty</div>";
     } else {

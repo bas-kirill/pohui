@@ -3,6 +3,8 @@
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
+global $connection;
+
 if (isset($_POST["login-username"])) {
     $username = sanitizeString($_POST["login-username"]);
     $password = sanitizeString($_POST["login-password"]);
@@ -13,10 +15,11 @@ if (isset($_POST["login-username"])) {
     }
 
     $usersSQL = "
-        select user_id, name, username, password, role_type from amazon.users 
+        select user_id, name, username, password, role_name from amazon.users u
+        inner join amazon.roles r on u.role_id = r.role_id
         where username = '$username' and password = '$password'";
 
-    $result = queryMySql($usersSQL);
+    $result = $connection->query($usersSQL);
     if ($result->num_rows == 0) {
         echo "<div>Username / Password invalid</div>";
         return;
@@ -27,13 +30,13 @@ if (isset($_POST["login-username"])) {
     $name = $row["name"];
     $username = $row["username"];
     $password = $row["password"];
-    $roleType = $row["role_type"];
+    $roleName = $row["role_name"];
 
     $_SESSION["user_id"] = $userId;
     $_SESSION["name"] = $name;
     $_SESSION["username"] = $username;
     $_SESSION["password"] = $password;
-    $_SESSION["role_type"] = $roleType;
+    $_SESSION["role_type"] = $roleName;
     echo "<span>You are logged in</span>";
     return;
 }

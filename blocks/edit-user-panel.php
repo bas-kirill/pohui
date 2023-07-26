@@ -46,10 +46,15 @@ $dynamicPanel = "
         <!-- Добавить возможность выбора пользователя из выпадающего списка и редактировать его -->
         <form method='post'>
             Name: <input type='text' name='edit-users-name'>
+            <br>
             Username: <input type='text' name='edit-users-username'>
+            <br>
             Password: <input type='text' name='edit-users-password'>
+            <br>
             Role: <input type='text' name='edit-users-role-type'>
+            <br>
             Address: <input type='text' name='edit-users-address'>
+            <br>
             <input type='submit' value='Submit'>
         </form>
     ";

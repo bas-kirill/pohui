@@ -4,9 +4,7 @@ require_once "../util/functions.php";
 require_once "../db/db.php";
 require_once "../log/log.php";
 
-function addUserToCookie() {
-
-}
+global $connection;
 
 if (isset($_POST["signup-name"])) {
     $name = sanitizeString($_POST["signup-name"]);
@@ -20,7 +18,7 @@ if (isset($_POST["signup-name"])) {
     }
 
     $selectAllUsersSQL = "select username from amazon.users where username = '$username'";
-    $usersResultSet = queryMySql($selectAllUsersSQL);
+    $usersResultSet = $connection->query($selectAllUsersSQL);
 
     if ($usersResultSet->num_rows > 0) {
         echo "<div>User with username '$username' already exists</div>";
@@ -34,7 +32,7 @@ if (isset($_POST["signup-name"])) {
 
     log_debug($insertNewUserSQL);
 
-    $result = queryMySql($insertNewUserSQL);
+    $result = $connection->query($insertNewUserSQL);
 
     if ($result) {
         log_info("Registered new user with nickname=$username");

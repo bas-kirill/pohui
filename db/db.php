@@ -19,19 +19,8 @@ debugToConsole("connected to db successfully");
 
 function createTable($name, $query)
 {
-    queryMySql("create table if not exists $name($query)");
-}
-
-function queryMySql($query)
-{
     global $connection;
-    $result = $connection->query($query);
-    if (!$result) {
-        debugToConsole("can not execute query " . $query);
-        die($connection->error);
-    }
-    debugToConsole($result);
-    return $result;
+    $connection->query("create table if not exists $name($query)");
 }
 
 ?>

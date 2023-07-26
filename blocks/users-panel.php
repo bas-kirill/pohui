@@ -9,20 +9,21 @@ global $connection;
 
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
+    debugToConsole($_SESSION);
     $sessionName = $_SESSION["name"];
     $sessionUsername = $_SESSION["username"];
     $sessionUserId = $_SESSION["user_id"];
-    $sessionRoleName = $_SESSION["role_type"];
+    $sessionRoleType = $_SESSION["role_type"];
 } else {
     $loggedIn = false;
 }
 
 if (!$loggedIn) {
-    $dynamicPanel = "<div>Need to log in to see page</div>";
+    echo "<div>Need to log in to see page</div>";
     return;
 }
 
-if ($sessionRoleName == "admin") {
+if ($sessionRoleType == "admin") {
     $adminSectionPanelDiv = "
         <div id='admin-actions-panel'>
             <form action='/web/navigate.php' method='post'>
@@ -44,56 +45,34 @@ if ($sessionRoleName == "admin") {
         </div>";
 }
 
-$selectAllRolesSQL = "select role_name from amazon.roles";
-$result = $connection->query($selectAllRolesSQL);
-$roleOptions = array();
+$allUsersWithRoleSQL = "
+    select user_id, name, username, password, delivery_address, role_name
+    from users u
+    inner join roles r on u.role_id = r.role_id";
+$result = $connection->query($allUsersWithRoleSQL);
+
+$userDivs = array();
 while ($row = $result->fetch_assoc()) {
+    $userId = $row["user_id"];
+    $name = $row["name"];
+    $username = $row["username"];
+    $password = $row["password"];
     $roleName = $row["role_name"];
-    $roleOption = "<option value='$roleName'>$roleName</option>";
-    $roleOptions[] = $roleOption;
+    $deliveryAddress = $row["delivery_address"];
+    $userDiv = "
+        <div>
+            Used Id: $userId; Name: $name; Username: $username; Password: $password; Role Type: $roleName; Delivery Address: $deliveryAddress
+        </div>
+    ";
+    $userDivs[] = $userDiv;
 }
 
-$roleOptionsHtml = implode(" ", $roleOptions);
+$userDivsHtml = implode(" ", $userDivs);
 
 $dynamicPanel = "
-        <form id='add-user-form' method='post'>
-            Name: <input type='text' name='name' required>
-            <br>
-            Username: <input type='text' name='username' required>
-            <br>
-            Password: <input type='text' name='password' required>
-            <br>
-            Role: 
-            <select name='role' required>
-                $roleOptionsHtml
-            </select>
-            <br>
-            Address: <input type='text' name='address' required>
-            <br>
-            <input type='submit' value='Submit'>
-        </form>
-        
-        <script>
-            const addUserForm = document.getElementById('add-user-form');
-            addUserForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const data = new FormData(this);
-                fetch('/blocks/add-user.php', {
-                    method: 'POST',
-                    body: data,
-                })
-                .then(data => {
-                    console.log(data);
-                    addUserForm.reset();
-                    alert('Successfully created new user!');
-                })
-                .catch(error => {
-                    console.error('Error: ', error);
-                    alert('New user creation error');
-                });
-            });
-        </script>
-    ";
+    <div>
+        $userDivsHtml
+    </div>";
 
 echo <<<_END
     <style>
@@ -133,7 +112,7 @@ echo <<<_END
             $adminSectionPanelDiv
         </div>
         <div id="orders-panel">
-            <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleName</div>
+            <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleType</div>
             <hr>
             $dynamicPanel
         </div>

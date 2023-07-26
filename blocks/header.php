@@ -60,7 +60,9 @@ _END;
 $host = $_SERVER["DOCUMENT_ROOT"];
 require_once $host . "/db/db.php";
 
-$result = queryMySql("select category from amazon.categories");
+global $connection;
+
+$result = $connection->query("select category from amazon.categories");
 
 $categoryItemsDev = array();
 while ($row = $result->fetch_assoc()) {

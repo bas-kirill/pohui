@@ -2,6 +2,8 @@
 require_once "../util/functions.php";
 require_once "../db/db.php";
 
+global $connection;
+
 $bookId = $_GET["id"];
 
 $sql = "
@@ -9,7 +11,7 @@ $sql = "
     inner join amazon.categories c on b.category_id = c.category_id
     where b.book_id = $bookId";
 
-$result = queryMySql($sql);
+$result = $connection->query($sql);
 if (!$result) {
     debugToConsole("can not execute $sql");
     return;
