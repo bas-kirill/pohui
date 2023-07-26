@@ -18,7 +18,7 @@ if (isset($_SESSION["username"])) {
 }
 
 if (!$loggedIn) {
-    $dynamicPanel = "<div>Need to log in to see page</div>";
+    echo "<div>Need to log in to see page</div>";
     return;
 }
 
@@ -56,55 +56,6 @@ while ($row = $result->fetch_assoc()) {
 $roleOptionsHtml = implode(" ", $roleOptions);
 
 $dynamicPanel = "
-        <form id='add-user-form' method='post'>
-            Name: <input type='text' name='name' required>
-            <br>
-            Username: <input type='text' name='username' required>
-            <br>
-            Password: <input type='text' name='password' required>
-            <br>
-            Role: 
-            <select name='role' required>
-                $roleOptionsHtml
-            </select>
-            <br>
-            Address: <input type='text' name='address' required>
-            <br>
-            <input type='submit' value='Add'>
-        </form>
-        
-        <script>
-            const addUserForm = document.getElementById('add-user-form');
-            addUserForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const data = new FormData(this);
-                fetch('/blocks/add-user.php', {
-                    method: 'POST',
-                    body: data,
-                })
-                .then(response => {
-                    if (response.status === 200) {
-                        console.log('Success', response);
-                        alert('Created successfully');
-                        return response.json();
-                    } else if (response.status === 409) {
-                        console.error('Conflict error:', response);
-                        alert('User exists');
-                    } else if (response.status === 500) {
-                        console.error('Server error:', response);
-                        alert('Error has occured');
-                    } else {
-                        throw new Error('Unexpected HTTP response: ' + response.status);
-                    }
-                })
-                .then(data => {
-                    
-                })
-                .catch(error => {
-                    console.error('Error: ', error);
-                });
-            });
-        </script>
     ";
 
 echo <<<_END
@@ -147,7 +98,55 @@ echo <<<_END
         <div id="orders-panel">
             <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleName</div>
             <hr>
-            $dynamicPanel
+            <form id='add-user-form' method='post'>
+                Name: <input type='text' name='name' required>
+                <br>
+                Username: <input type='text' name='username' required>
+                <br>
+                Password: <input type='text' name='password' required>
+                <br>
+                Role: 
+                <select name='role' required>
+                    $roleOptionsHtml
+                </select>
+                <br>
+                Address: <input type='text' name='address' required>
+                <br>
+                <input type='submit' value='Add'>
+            </form>
+            
+            <script>
+                const addUserForm = document.getElementById('add-user-form');
+                addUserForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const data = new FormData(this);
+                    fetch('/blocks/add-user.php', {
+                        method: 'POST',
+                        body: data,
+                    })
+                    .then(response => {
+                        if (response.status === 200) {
+                            console.log('Success', response);
+                            alert('Created successfully');
+                            return response.json();
+                        } else if (response.status === 409) {
+                            console.error('Conflict error:', response);
+                            alert('User exists');
+                        } else if (response.status === 500) {
+                            console.error('Server error:', response);
+                            alert('Error has occured');
+                        } else {
+                            throw new Error('Unexpected HTTP response: ' + response.status);
+                        }
+                    })
+                    .then(data => {
+                        
+                    })
+                    .catch(error => {
+                        console.error('Error: ', error);
+                    });
+                });
+            </script>
         </div>
     </div>
 _END;

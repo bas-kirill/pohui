@@ -5,12 +5,14 @@ require_once $host . "/log/log.php";
 require_once $host . "/util/functions.php";
 require_once $host . "/db/db.php";
 
+global $connection;
+
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
-    $name = $_SESSION["name"];
-    $username = $_SESSION["username"];
-    $userId = $_SESSION["user_id"];
-    $roleType = $_SESSION["role_type"];
+    $sessionName = $_SESSION["name"];
+    $sessionUsername = $_SESSION["username"];
+    $sessionUserId = $_SESSION["user_id"];
+    $sessionRoleName = $_SESSION["role_type"];
 } else {
     $loggedIn = false;
 }
@@ -20,7 +22,7 @@ if (!$loggedIn) {
     return;
 }
 
-if ($roleType == "admin") {
+if ($sessionRoleName === "admin") {
     $adminSectionPanelDiv = "
         <div id='admin-actions-panel'>
             <form action='/web/navigate.php' method='post'>
@@ -41,16 +43,6 @@ if ($roleType == "admin") {
             </form>
         </div>";
 }
-
-$dynamicPanel = "
-        <form method='post'>
-            Title: <input type='text' name='add-book-title'>
-            Description: <input type='text' name='add-book-description'>
-            Price: <input type='number' name='add-book-price'>
-            Category: <input type='number' name='add-book-category-id'>
-            <input type='submit' value='Submit'>
-        </form>
-    ";
 
 echo <<<_END
     <style>
@@ -81,8 +73,8 @@ echo <<<_END
     <div id="account-panel">
         <div id="actions-panel">
             <div id="customer-actions-panel">
-                <div><a href="http://localhost:8888/web/account.php?edit=$username">Edit Profile</a></div>
-                <div><a href="http://localhost:8888/web/account.php?delete=$username">Delete Profile</a></div>
+                <div><a href="http://localhost:8888/web/account.php?edit=$sessionUsername">Edit Profile</a></div>
+                <div><a href="http://localhost:8888/web/account.php?delete=$sessionUsername">Delete Profile</a></div>
                 <form action="logout.php" method="post">
                     <input type="submit" value="Log out">
                 </form>
@@ -90,9 +82,56 @@ echo <<<_END
             $adminSectionPanelDiv
         </div>
         <div id="orders-panel">
-            <div>Name: $name; Username: $username; Role Type: $roleType</div>
+            <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleName</div>
             <hr>
-            $dynamicPanel
+            <form id='add-book-form' method='post'>
+                Title: <input type='text' name='title' required>
+                <br>
+                Description: <input type='text' name='description' required>
+                <br>
+                Price: <input type='number' name='price' required>
+                <br>
+                ISBN: <input type="text" name="isbn" required>
+                <br>
+                Category: <input type='text' name='category' required>
+                <br>
+                <input type='submit' value='Add'>
+            </form>
+            
+            <script>
+                const addBookForm = document.getElementById('add-book-form');
+                addBookForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const body = new FormData(this);
+                    fetch('/blocks/add-book.php', {
+                        method: 'POST',
+                        body: body
+                    })
+                    .then(response => {
+                        if (response.status === 200) {
+                            alert('Added successfully');
+                            return response.json();
+                        } else if(response.status === 400) {
+                            alert("Incorrect Request");
+                            throw new Error('Bad Request:' + response);
+                        } else if (response.status === 409) {
+                            alert('Book exists');
+                            throw new Error('Conflict Error:' + response);
+                        } else if (response.status === 500) {
+                            alert('Server Error');
+                            throw new Error('Server Error:' + response);
+                        } else {
+                            throw new Error('Unexpected HTTP response: ' + response.status);
+                        }
+                    })
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(error => {
+                        console.error('Error: ', error);
+                    });
+                });
+            </script>
         </div>
     </div>
 _END;
