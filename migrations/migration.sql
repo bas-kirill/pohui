@@ -1,11 +1,18 @@
+create table if not exists amazon.roles
+(
+    role_id   int auto_increment primary key,
+    role_name varchar(255) not null
+);
+
 create table if not exists amazon.users
 (
     user_id          int auto_increment primary key,
-    `name`           varchar(64)                not null,
-    username         varchar(32)                not null unique,
-    `password`       varchar(32)                not null,
-    role_type        enum ('admin', 'customer') not null default 'customer',
-    delivery_address varchar(255)               not null
+    `name`           varchar(64)  not null,
+    username         varchar(32)  not null unique,
+    `password`       varchar(32)  not null,
+    delivery_address varchar(255) not null,
+    role_id          int,
+    constraint fk_role_id foreign key (role_id) references amazon.roles (role_id)
 );
 
 create table if not exists amazon.categories
@@ -29,8 +36,11 @@ create table if not exists amazon.books
 
 create table if not exists amazon.orders
 (
-    user_id int,
-    book_id int,
+    user_id           int,
+    book_id           int,
+    book_position     int,
+    order_creation_ts timestamp,
+    CONSTRAINT PK_USER_ID_BOOK_ID PRIMARY KEY (user_id, book_id),
     CONSTRAINT FK_USER_ID FOREIGN KEY (user_id)
         references amazon.users (user_id),
     CONSTRAINT FK_BOOK_ID FOREIGN KEY (book_id)
