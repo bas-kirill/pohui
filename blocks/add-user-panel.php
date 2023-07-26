@@ -55,9 +55,6 @@ while ($row = $result->fetch_assoc()) {
 
 $roleOptionsHtml = implode(" ", $roleOptions);
 
-$dynamicPanel = "
-    ";
-
 echo <<<_END
     <style>
         #account-panel {

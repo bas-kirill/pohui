@@ -44,6 +44,16 @@ if ($sessionRoleName === "admin") {
         </div>";
 }
 
+$selectAllCategories = "select category from amazon.categories";
+$result = $connection->query($selectAllCategories);
+$categoryOptions = array();
+while ($row = $result->fetch_assoc()) {
+    $categoryName = $row["category"];
+    $categoryOption = "<option value='$categoryName'>$categoryName</option>";
+    $categoryOptions[] = $categoryOption;
+}
+$categoryOptionsHtml = "\"" . implode(" ", $categoryOptions) . "\"";
+
 echo <<<_END
     <style>
         #account-panel {
@@ -93,7 +103,10 @@ echo <<<_END
                 <br>
                 ISBN: <input type="text" name="isbn" required>
                 <br>
-                Category: <input type='text' name='category' required>
+                Category:
+                <select name="category" required>
+                    $categoryOptionsHtml
+                </select>
                 <br>
                 <input type='submit' value='Add'>
             </form>
