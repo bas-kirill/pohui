@@ -50,10 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             insert ignore into amazon.users (name, username, password, delivery_address, role_id)
             select '$name', '$username', '$password', '$address', role_id 
             from amazon.roles 
-            where role_name = '$role'
-            on conflict nothing";
+            where role_name = '$role'";
         $result = $connection->query($insertNewUserSQL);
         if ($result === true) {
+            debugToConsole(sprintf("affected rows=%d", $connection->affected_rows));
             if ($connection->affected_rows > 0) {
                 http_response_code(200);
             } else {
@@ -62,6 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             http_response_code(500);
         }
+
+        header("Content-Type: application/json");
+        $data = array("rows" => $connection->affected_rows);
+        echo json_encode($data);
     }
 }
 

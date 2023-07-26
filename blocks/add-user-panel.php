@@ -82,14 +82,26 @@ $dynamicPanel = "
                     method: 'POST',
                     body: data,
                 })
+                .then(response => {
+                    if (response.status === 200) {
+                        console.log('Success', response);
+                        alert('Created successfully');
+                        return response.json();
+                    } else if (response.status === 409) {
+                        console.error('Conflict error:', response);
+                        alert('User exists');
+                    } else if (response.status === 500) {
+                        console.error('Server error:', response);
+                        alert('Error has occured');
+                    } else {
+                        throw new Error('Unexpected HTTP response: ' + response.status);
+                    }
+                })
                 .then(data => {
-                    console.log(data);
-                    addUserForm.reset();
-                    alert('Successfully created new user!');
+                    
                 })
                 .catch(error => {
                     console.error('Error: ', error);
-                    alert('New user creation error');
                 });
             });
         </script>
