@@ -1,9 +1,10 @@
 <?php
 
-require_once "../log/log.php";
-require_once "../util/functions.php";
-require_once "../db/db.php";
-require_once "../blocks/pojo.php";
+$host = $_SERVER["DOCUMENT_ROOT"];
+require_once $host . "/log/log.php";
+require_once $host . "/util/functions.php";
+require_once $host . "/db/db.php";
+require_once $host . "/blocks/pojo.php";
 
 global $connection;
 

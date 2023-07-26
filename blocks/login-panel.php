@@ -1,7 +1,8 @@
 <?php
 
-require_once "../util/functions.php";
-require_once "../db/db.php";
+$host = $_SERVER["DOCUMENT_ROOT"];
+require_once $host . "/util/functions.php";
+require_once $host . "/db/db.php";
 
 global $connection;
 

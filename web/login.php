@@ -6,7 +6,7 @@ require_once $host . "/blocks/head.php";
 echo "</head>";
 echo "<body>";
 echo "<header>";
-require_once "../blocks/header.php";
+require_once $host . "/blocks/header.php";
 echo "</header>";
 echo "<main>";
 echo <<<_END
