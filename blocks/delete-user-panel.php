@@ -42,9 +42,6 @@ if ($roleType == "admin") {
         </div>";
 }
 
-$dynamicPanel = "
-    ";
-
 echo <<<_END
     <style>
         #account-panel {

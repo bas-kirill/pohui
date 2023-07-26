@@ -7,10 +7,10 @@ require_once $host . "/db/db.php";
 
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
-    $name = $_SESSION["name"];
-    $username = $_SESSION["username"];
-    $userId = $_SESSION["user_id"];
-    $roleType = $_SESSION["role_type"];
+    $sessionName = $_SESSION["name"];
+    $sessionUsername = $_SESSION["username"];
+    $sessionUserId = $_SESSION["user_id"];
+    $sessionRoleName = $_SESSION["role_type"];
 } else {
     $loggedIn = false;
 }
@@ -20,7 +20,7 @@ if (!$loggedIn) {
     return;
 }
 
-if ($roleType == "admin") {
+if ($sessionRoleName == "admin") {
     $adminSectionPanelDiv = "
         <div id='admin-actions-panel'>
             <form action='/web/navigate.php' method='post'>
@@ -41,12 +41,6 @@ if ($roleType == "admin") {
             </form>
         </div>";
 }
-
-$dynamicPanel = "
-        <form method='post'>
-            Title: <input type='text' name='delete-book-title'>
-        </form>
-    ";
 
 echo <<<_END
     <style>
@@ -77,8 +71,8 @@ echo <<<_END
     <div id="account-panel">
         <div id="actions-panel">
             <div id="customer-actions-panel">
-                <div><a href="http://localhost:8888/web/account.php?edit=$username">Edit Profile</a></div>
-                <div><a href="http://localhost:8888/web/account.php?delete=$username">Delete Profile</a></div>
+                <div><a href="http://localhost:8888/web/account.php?edit=$sessionUsername">Edit Profile</a></div>
+                <div><a href="http://localhost:8888/web/account.php?delete=$sessionUsername">Delete Profile</a></div>
                 <form action="logout.php" method="post">
                     <input type="submit" value="Log out">
                 </form>
@@ -86,9 +80,43 @@ echo <<<_END
             $adminSectionPanelDiv
         </div>
         <div id="orders-panel">
-            <div>Name: $name; Username: $username; Role Type: $roleType</div>
+            <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleName</div>
             <hr>
-            $dynamicPanel
+            <form id="delete-book-by-isbn-form" method='post'>
+                ISBN: <input type='text' name='isbn'>
+                <input type='submit' value='Delete'>
+            </form>
+            
+            <script>
+                const deleteBookByISBNForm = document.getElementById('delete-book-by-isbn-form');
+                deleteBookByISBNForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const data = new FormData(this);
+                    fetch('/blocks/delete-book.php', {
+                        method: 'POST',
+                        body: data
+                    })
+                    .then(response => {
+                        if (response.status === 200) {
+                            alert('Book deleted');
+                        } else if (response.status === 400) {
+                            alert('Bad Request');
+                            throw new Error('Bad Request:' + response);
+                        } else if (response.status === 404) {
+                            alert('Book does not exists');
+                            throw new Error('User does not exists: ' + response);
+                        } else if (response.status === 500) {
+                            alert('Server Error');
+                            throw new Error('Server error: ' + response);
+                        } else {
+                            alert('Unexpected Error');
+                            throw new Error('Unexpected HTTP response: ' + response.status);
+                        }
+                    })
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error))
+                });
+            </script>
         </div>
     </div>
 _END;
