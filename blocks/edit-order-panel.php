@@ -48,7 +48,7 @@ if ($roleType == "admin") {
                <br>
                <input type='submit' name='edit-order' value='Edit Order'>
                <br>
-               <input type='submit' name='delete-order' value='Edit Order'>
+               <input type='submit' name='delete-order' value='Delete Order'>
                <br>
             </form>
         </div>";
