@@ -1,9 +1,7 @@
 <?php
-session_start();
-$host = $_SERVER["DOCUMENT_ROOT"];
-require_once $host . "/blocks/book-cookie-handler.php";
 echo "<html>";
 echo "<head>";
+$host = $_SERVER["DOCUMENT_ROOT"];
 require_once $host . "/blocks/head.php";
 echo "</head>";
 echo "<body>";
@@ -19,7 +17,9 @@ echo <<<_END
         }
     </style>
 _END;
+
 require_once $host . "/blocks/books-panel.php";
+
 echo "</main>";
 echo "<footer>";
 require_once $host . "/blocks/footer.php";
@@ -27,4 +27,3 @@ echo "</footer>";
 echo "</body>";
 echo "</html>";
 ?>
-

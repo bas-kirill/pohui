@@ -33,12 +33,22 @@ if ($sessionRoleType === "admin") {
                <input type='submit' name='edit-users' value='Edit User'>
                <br>
                <input type='submit' name='delete-users' value='Delete User'>
+               <hr>
+               <input type='submit' name='books' value='Books'>
                <br>
                <input type='submit' name='add-book' value='Add Book'>
                <br>
                <input type='submit' name='edit-book' value='Edit Book'>
                <br>
                <input type='submit' name='delete-book' value='Delete Book'>
+               <hr>
+               <input type='submit' name='orders' value='Orders'>
+               <br>
+               <input type='submit' name='add-order' value='Add Order'>
+               <br>
+               <input type='submit' name='edit-order' value='Edit Order'>
+               <br>
+               <input type='submit' name='delete-order' value='Edit Order'>
                <br>
             </form>
         </div>";

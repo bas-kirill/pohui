@@ -9,20 +9,21 @@ global $connection;
 
 if (isset($_SESSION["username"])) {
     $loggedIn = true;
+    debugToConsole($_SESSION);
     $sessionName = $_SESSION["name"];
     $sessionUsername = $_SESSION["username"];
     $sessionUserId = $_SESSION["user_id"];
-    $sessionRoleName = $_SESSION["role_type"];
+    $sessionRoleType = $_SESSION["role_type"];
 } else {
     $loggedIn = false;
 }
 
 if (!$loggedIn) {
-    $dynamicPanel = "<div>Need to log in to see page</div>";
+    echo "<div>Need to log in to see page</div>";
     return;
 }
 
-if ($sessionRoleName === "admin") {
+if ($sessionRoleType == "admin") {
     $adminSectionPanelDiv = "
         <div id='admin-actions-panel'>
             <form action='/web/navigate.php' method='post'>
@@ -54,15 +55,30 @@ if ($sessionRoleName === "admin") {
         </div>";
 }
 
-$selectAllCategories = "select category from amazon.categories";
-$result = $connection->query($selectAllCategories);
-$categoryOptions = array();
+$selectAllBooksSQL = "
+    select book_id, title, description, price, creation_timestamp, isbn_10, category
+    from amazon.books
+    inner join amazon.categories on books.category_id = categories.category_id";
+$result = $connection->query($selectAllBooksSQL);
+
+$bookDivs = array();
 while ($row = $result->fetch_assoc()) {
-    $categoryName = $row["category"];
-    $categoryOption = "<option value='$categoryName'>$categoryName</option>";
-    $categoryOptions[] = $categoryOption;
+    $bookId = $row["book_id"];
+    $title = $row["title"];
+    $description = $row["description"];
+    $price = $row["price"];
+    $creationTs = $row["creation_timestamp"];
+    $isbn = $row["isbn_10"];
+    $category = $row["category"];
+    $bookDiv = "
+        <div>
+            Book Id: $bookId; Title: $title; Description: $description; Price: $price; Creation Ts: $creationTs; ISBN: $isbn; Category: $category
+        </div>
+    ";
+    $bookDivs[] = $bookDiv;
 }
-$categoryOptionsHtml = "\"" . implode(" ", $categoryOptions) . "\"";
+
+$userDivsHtml = implode(" ", $bookDivs);
 
 echo <<<_END
     <style>
@@ -102,59 +118,11 @@ echo <<<_END
             $adminSectionPanelDiv
         </div>
         <div id="orders-panel">
-            <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleName</div>
+            <div>Name: $sessionName; Username: $sessionUsername; Role Type: $sessionRoleType</div>
             <hr>
-            <form id='add-book-form' method='post'>
-                Title: <input type='text' name='title' required>
-                <br>
-                Description: <input type='text' name='description' required>
-                <br>
-                Price: <input type='number' name='price' required>
-                <br>
-                ISBN: <input type="text" name="isbn" required>
-                <br>
-                Category:
-                <select name="category" required>
-                    $categoryOptionsHtml
-                </select>
-                <br>
-                <input type='submit' value='Add'>
-            </form>
-            
-            <script>
-                const addBookForm = document.getElementById('add-book-form');
-                addBookForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const body = new FormData(this);
-                    fetch('/blocks/add-book.php', {
-                        method: 'POST',
-                        body: body
-                    })
-                    .then(response => {
-                        if (response.status === 200) {
-                            alert('Added successfully');
-                            return response.json();
-                        } else if(response.status === 400) {
-                            alert("Incorrect Request");
-                            throw new Error('Bad Request:' + response);
-                        } else if (response.status === 409) {
-                            alert('Book exists');
-                            throw new Error('Conflict Error:' + response);
-                        } else if (response.status === 500) {
-                            alert('Server Error');
-                            throw new Error('Server Error:' + response);
-                        } else {
-                            throw new Error('Unexpected HTTP response: ' + response.status);
-                        }
-                    })
-                    .then(data => {
-                        console.log(data);
-                    })
-                    .catch(error => {
-                        console.error('Error: ', error);
-                    });
-                });
-            </script>
+            <div>
+                $userDivsHtml
+            </div>
         </div>
     </div>
 _END;
