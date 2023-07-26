@@ -15,7 +15,7 @@ if ($connection->connect_error) {
     die($connection->connect_error);
 }
 
-debugToConsole("connected to db successfully");
+error_log("connected to db successfully");
 
 function createTable($name, $query)
 {
